@@ -1,4 +1,4 @@
-module Metrics::Volume
+module metrics::Volume
 
 import IO;
 import String;
@@ -14,6 +14,12 @@ private int countCommentLines(list[str] lines)
 	
 	for(str line <- lines)
 	{
+		//1: Remove everything after single line comment 
+		//2: Remove single line multiline
+		//2: Trim
+		//3: 
+		
+		
 		if(startsWith(trim(line), "/*"))
 		{
 			if(!endsWith(trim(line),"*/"))

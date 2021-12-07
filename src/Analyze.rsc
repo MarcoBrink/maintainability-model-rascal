@@ -6,13 +6,12 @@ import Set;
 
 import util::Math;
 import metrics::UnitComplexity;
+import metrics::Volume;
 
 import lang::java::m3::AST;
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
-
-alias Methods = rel[loc, Statement];
 
 public void startAnalyses(){
 	//loc currentProject = |project://consumer|;
@@ -24,15 +23,15 @@ public void startAnalyses(){
 	//TODO MOVE
 	// Global variables used by UnitComplexity and Unit Size
 	//from lang::java::jdt::m3::AST
+	M3 model = createM3FromEclipseProject(currentProject);
 	set[Declaration] declarations = createAstsFromEclipseProject(currentProject, true); 
 	Methods methods = allMethods(declarations);
-	println("Found "+toString(size(methods))+" methods");
-	
+	println("Found " + toString(size(methods))+" methods");
 	
 	//calc volume
-	
+	calculateVolume(model);
 	//calc complexity per unit and unit Size
-	calculateUnitMetrics(methods);
+	//calculateUnitMetrics(methods);
 	
 	//display unit size
 	
@@ -43,11 +42,11 @@ public void startAnalyses(){
 }
 
 
-private void calculateUnitComplexity(Methods methodes){
-	//from metrics::UnitComplexity
-	str rating = calculateUnitMetrics(methods);
-	println(rating);
-}
+//private void calculateUnitComplexity(Methods methodes){
+//	//from metrics::UnitComplexity
+//	str rating = calculateUnitMetrics(methods);
+//	println(rating);
+//}
 
 
 

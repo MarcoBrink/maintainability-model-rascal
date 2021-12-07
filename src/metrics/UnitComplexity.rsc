@@ -19,7 +19,7 @@ alias RelativeLOCs = tuple[int, int, int, int]; // low, moderate, high, very_hig
 public str calculateUnitMetrics(Methods methods) {
 	println("starting");
 	list[MethodScore] mscores = [<a,b,volume(a),calcCC(b)> | <a,b> <- methods];
-	int totalLinesOfCode = totalLinesOfCode(mscores);
+	int totalLinesOfCode = getTotalLinesOfCode(mscores);
 	println("Total LOC: "+toString(totalLinesOfCode));
 	AbsoluteLOCs alocs = groupByRiskGroup(mscores);
 	println(alocs);
@@ -44,7 +44,7 @@ private int volume(loc location) {
 	return result;
 }
 
-private int totalLinesOfCode(list[MethodScore] ms){
+private int getTotalLinesOfCode(list[MethodScore] ms){
 	//method from List
 	return sum([x | <_,_,x,_> <-ms]);
 }

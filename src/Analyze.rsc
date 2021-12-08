@@ -42,11 +42,11 @@ private void printUnitScores(str label, tuple[UnitScores,str] ranking){
 	UnitScores scores = ranking[0];
 	str overall = ranking[1];
 	
-	println("  Results of " +label + " analyses.");
-	println("||  low  ||   mid   ||   high   ||  very high ||");
-	println("|| "+format(scores[0])+" ||  "+format(scores[1])+"  ||  "+format(scores[2])+"   ||   "+format(scores[3])+"    ||");
+	println("  Results of " +label + " risk analyses.");
+	println("||  low  ||   moderate   ||   high   ||  very high ||");
+	println("|| "+format(scores[0])+" ||    "+format(scores[1])+"     ||  "+format(scores[2])+"   ||   "+format(scores[3])+"    ||");
 	println();
-	println("Overal Ranking: "+overall);
+	println("Overal "+label+" Risk Ranking: "+overall);
 	println();
 }
 

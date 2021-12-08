@@ -105,6 +105,13 @@ private tuple[int, int, int, int] groupSizeByRiskGroup(list[MethodScore] mss){
 	return score;
 }
 
+/**
+Group score according to McCabe's categorisation
+1-10 low risk
+11-20 moderate risk
+21-50 high risk
+50+ very high risk
+*/
 private tuple[int, int, int, int] groupComplexityByRiskGroup(list[MethodScore] mss){
 	tuple[int,int,int,int] score = <0,0,0,0>;
 	

@@ -65,7 +65,7 @@ private int volume(loc location) {
 
 private int totalLinesOfCodeOfAllMethods(list[MethodScore] ms){
 	//method from List
-	return sum([x | <_,_,x,_> <-ms]);
+	return sum([0]+[x | <_,_,x,_> <-ms]);
 }
 
 private UnitScores calculateUnitSizePerCategory(list[MethodScore] mscores, totalLinesOfCode){
@@ -141,6 +141,9 @@ private tuple[real, real, real, real] relative(tuple[int,int,int,int] abs, int t
 }
 
 private real percentage(int x, int total){
+	if(x == 0|| total == 0){
+	  return 0.0;
+	}
 	return (toReal(x)*100.0)/total;
 }
 

@@ -9,10 +9,11 @@ import metrics::DuplicationMetric;
 
 public void startAnalyses(){
 	//loc currentProject = |project://consumer|;
-	loc currentProject = |project://Jabberpoint-le3|;
-	//loc currentProject = |project://smallsql|;
+	//loc currentProject = |project://Jabberpoint-le3|;
+	loc currentProject = |project://smallsql|;
 	//loc currentProject = |project://hsqldb|;
 	//loc currentProject = |project://test|;
+	//loc currentProject = |project://testDup|;
 	startAnalyses(currentProject);
 }
 

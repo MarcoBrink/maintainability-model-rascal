@@ -28,11 +28,15 @@ public real calculateDuplicationPercentage(loc project){
 	  	int numberOfLines = size(lineblocks[key]);
 	  	if(numberOfLines>blockSize){
 	  	 duplicateLines += lineblocks[key];
+	  
 	  	}
 	}
-  
-  	int duplicateLinesSize = size(duplicateLines); 
-  	return toReal(size(duplicateLines)*100.0)/totalLines;
+  	
+  	set[str] duplicteLinesWithoutClones = {x| x<-duplicateLines, !startsWith(x, "|newline|")};
+  	
+  	int duplicateLinesSize = size(duplicteLinesWithoutClones); 
+ 
+  	return toReal(duplicateLinesSize*100.0)/totalLines;
   	
   	println((realTime()-starttime)/1000);
 }
@@ -42,6 +46,8 @@ private tuple[int, map[str, set[str]]] calculateDuplicationPerFile(loc file, int
 	
 	<x,_> = removeComments(file);
 	list[str] cleanLines = removeWhitespace(x); //remove all comments and whitespace from lines
+	//list[str] cleanLines = trimListEntries(x);
+	
 	int totalLines = size(cleanLines);
 	
 	if(totalLines >= blockSize){
@@ -56,15 +62,26 @@ private set[loc] fetchFiles(loc project){
 
 private map[str, set[str]] lineBlocks(list[str] lines, str path, int blockSize, map[str, set[str]] lineblocks) {
 	for (i <- [0 .. size(lines)-blockSize], block := intercalate("", lines[i .. i+blockSize])) {	
-		set[str] numbers = {path + "_"+toString(c) | int c  <- [i .. i+blockSize]};
+		set[str] numbers = {path +toString(c) | int c  <- [i .. i+blockSize]};
 		
-		if (block in lineblocks)
+		if (block in lineblocks){ 
+			set[str] numbers = {path +toString(c) | int c  <- [i .. i+blockSize]}; 
 			lineblocks[block] += numbers;
-		else
+		}
+			
+		else{
+			//new lines get a special prefix.
+			set[str] numbers = {"|newline|"+path +toString(c) | int c  <- [i .. i+blockSize]};
 			lineblocks += (block : numbers);
+		}
+			
 	}
 	
 	return lineblocks;
+}
+
+list[str] trimListEntries(list[str] lines){
+  return [trim(l)| l <-lines];
 }
 
 list[str] removeWhitespace(list[str] lines) =

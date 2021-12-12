@@ -8,6 +8,9 @@ import lang::java::m3::Core;
 import IO;
 import String;
 
+
+
+
 public int calculateLinesOfCode(loc location) {
 	int count = 0;
 	bool inCommentBlock = false;

@@ -1,4 +1,4 @@
-module metrics::UnitComplexity
+module metrics::UnitComplexityMetric
 
 import lang::java::m3::AST;
 import lang::java::m3::Core;
@@ -7,8 +7,6 @@ import lang::java::jdt::m3::AST;
 
 import metrics::calculations::LinesOfCode;
 import metrics::calculations::CyclomaticComplexity;
-
-import metrics::ratings::UnitComplexityRating;
 
 import List; 
 import Set;
@@ -145,8 +143,6 @@ private tuple[real, real, real, real] relative(tuple[int,int,int,int] abs, int t
 private real percentage(int x, int total){
 	return (toReal(x)*100.0)/total;
 }
-
-
 
 private str calculateRank(tuple[real, real, real, real] rls){
 	if(rls[1] <= 25 && rls[2]<=0 && rls[3]<=0){

@@ -7,12 +7,7 @@ import lang::java::jdt::m3::Core;
 import lang::java::m3::Core;
 import lang::java::m3::AST;
 
-
-public list[str] readProjectFileAsArray(loc file){
-	return readFileLines(file);
-}
-
-public void calculateVolume(M3 model)
+public void calculateVolume(M3 model, bool includeTests)
 {
 	map[str,int] LOC = ();
 	
@@ -22,8 +17,11 @@ public void calculateVolume(M3 model)
 	
 	for(x <- model.declarations)
 	{
-		//if(contains(x.src.path, "junit")) continue;
-		//if(contains(x.src.path, "/test/")) continue;
+		if(!includeTests)
+		{
+			if(contains(x.src.path, "junit")) continue;
+			if(contains(x.src.path, "/test/")) continue;
+		}
 		
 		if(isCompilationUnit(x.name))
 		{
@@ -45,24 +43,26 @@ public void calculateVolume(M3 model)
 private map[str,int] determineCategoryPerLine(list[str] lines, map[str,int] lineCategories)
 {
 	bool multiLineCommentActive = false;
-	
+	int total = 0;
 	for(str line <- lines)
 	{
+		total += 1;
 		line = removeWhiteSpace(line);
-		tuple[bool multiLineActive, map[str,int] lineCategories] result = determineLineType(multiLineCommentActive, lineCategories, line);
+		tuple[bool multiLineActive, map[str,int] lineCategories] result = determineLineCategory(multiLineCommentActive, lineCategories, line);
 		
 		multiLineCommentActive = result.multiLineActive;
 		lineCategories = result.lineCategories;
 	}
-
+	println(total);
 	return lineCategories;
 }
 
-private tuple[bool,map[str,int]] determineLineType(bool multiLineCommentActive, map[str,int] lineCategories, str line)
+private tuple[bool,map[str,int]] determineLineCategory(bool multiLineCommentActive, map[str,int] lineCategories, str line)
 {	
 	// Check if line is a blank line
 	if(line == "")
 	{
+		println("Blank line added <line>  ");
 		return addBlankLine(multiLineCommentActive, lineCategories);
 	}
 	
@@ -75,6 +75,7 @@ private tuple[bool,map[str,int]] determineLineType(bool multiLineCommentActive, 
 	// Check if the line is a full single line comment or a full mulit-line comment on a single line
 	if(isSingleLineComment(line) || isMultiLineCommentOnSingleLine(line))
 	{
+		println("Comment line added <line>");
 		return addCommentLine(multiLineCommentActive, lineCategories);
 	}
 	
@@ -89,10 +90,11 @@ private tuple[bool,map[str,int]] determineLineType(bool multiLineCommentActive, 
 		// If the line starts with a multi-line, no code is included
 		if(startsWith(line, "/*"))
 		{
+			println("Comment line added <line>");
 			return addCommentLine(multiLineCommentActive,lineCategories);
 		}
 	}
-
+	println("Code line added: <line>  <multiLineCommentActive>");
 	return addCodeLine(multiLineCommentActive,lineCategories);
 }
 
@@ -128,6 +130,7 @@ private tuple[bool,map[str,int]] determineEndingMultiLineCategory(bool multiLine
 	multiLineCommentActive = false;
 	if(endsWith(line, "*/"))
 	{
+		println("Comment line added <line>");
 		return addCommentLine(multiLineCommentActive, lineCategories);
 	}
 	else
@@ -150,12 +153,16 @@ private tuple[bool,map[str,int]] determineEndingMultiLineCategory(bool multiLine
 		}
 		
 		//Contains code or only comment?:
-		str twoAfterEnd = substring(line, afterEndNodePosition, afterEndNodePosition + 2);
-		if(twoAfterEnd != "//" && twoAfterEnd != "/*")
+		if((size(line) - afterEndNodePosition) > 1)
 		{
-			return addCodeLine(multiLineCommentActive, lineCategories);
+			str twoAfterEnd = substring(line, afterEndNodePosition, afterEndNodePosition + 2);
+			if(twoAfterEnd != "//" && twoAfterEnd != "/*")
+			{
+				println("Code line added: <line> <multiLineCommentActive>");
+				return addCodeLine(multiLineCommentActive, lineCategories);
+			}
 		}
-		
+		println("Comment line added <line>");
 		return addCommentLine(multiLineCommentActive, lineCategories);
 	}
 }
@@ -190,9 +197,11 @@ private tuple[bool,map[str,int]] determineLineWithMultipleEndNodesCategory(bool 
 					multiLineCommentActive = (findFirst(afterEnd, "/*") < singleLineStart) ?  true : false; 
 					if((singleLineStart - 1) == endNodePosition)
 					{
+						println("Comment line added <line>");
 						return addCommentLine(multiLineCommentActive, lineCategories);
 					}
 				}
+				println("Code line added: <line> <multiLineCommentActive>");
 				return addCodeLine(multiLineCommentActive, lineCategories);
 			}
 		}
@@ -202,15 +211,17 @@ private tuple[bool,map[str,int]] determineLineWithMultipleEndNodesCategory(bool 
 			if(singleLineStart != -1)
 			{
 				int endNodePos = findFirst(line, "*/");
-				println("<singleLineStart> and <endNodePos>");
 				if((singleLineStart -2) == endNodePos)
 				{
+					println("Comment line added <line>");
 					return addCommentLine(multiLineCommentActive, lineCategories);
 				}
 			}
+			println("Code line added: <line>");
 			return addCodeLine(multiLineCommentActive, lineCategories);
 		}
 	}
+	println("Comment line added <line>");
 	return addCommentLine(multiLineCommentActive, lineCategories);
 }
 

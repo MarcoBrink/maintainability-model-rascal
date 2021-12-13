@@ -1,21 +1,17 @@
-module metrics::UnitComplexity
+module metrics::UnitComplexityMetric
 
 import lang::java::m3::AST;
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-import metrics::calculations::LinesOfCode;
 import metrics::calculations::CyclomaticComplexity;
-
+import metrics::calculations::Normalize;
+import Util;
 
 import List; 
 import Set;
-import IO;
 import util::Math;
-
-alias Methods = rel[loc, Statement];
-alias MethodScore = tuple[loc, Statement, int, int]; //location, Method, Number of lines, and UnitComplexity Score.
 
 alias UnitScores = tuple[real, real, real, real]; // low, moderate, high, very_high
 
@@ -35,22 +31,8 @@ public list[tuple[UnitScores,str]] calculateUnitMetrics(loc project) {
 	return [<unitSizeCategories,sizeRank>,<unitComplexityCategories,complexityRank>];
 }
 
-private Methods findAllMethodsInProject(loc currentProject){
-	set[Declaration] declarations = createAstsFromEclipseProject(currentProject, true); //Move to analyze??
-	return allMethods(declarations);
-}
-
-private Methods allMethods(set[Declaration] decls){
-	results = {};
-	visit(decls){
-		case m: \method(_,_,_,_, Statement s): results += <m.src, s>;
-		case c: \constructor(_,_,_, Statement s): results += <c.src, s>;
-	}
-	return results; 
-}
-
 private list[MethodScore] calculateVolumeAndComplexityPerUnit(Methods methods){
-	return [<a,b,volume(a),calcCC(b)> | <a,b> <- methods];
+	return [<a,b,normalizedUnit.metadata.codeLines,calcCC(b)> | <a,b> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
 }
 
 private int calcCC(Statement statement) {
@@ -59,16 +41,9 @@ private int calcCC(Statement statement) {
 	return result;
 }
 
-private int volume(loc location) {
-	//method from metrics::calculations::LinesOfCode;
-	int result = calculateLinesOfCode(location);
-	return result;
-}
-
-
 private int totalLinesOfCodeOfAllMethods(list[MethodScore] ms){
 	//method from List
-	return sum([x | <_,_,x,_> <-ms]);
+	return sum([0]+[x | <_,_,x,_> <-ms]);
 }
 
 private UnitScores calculateUnitSizePerCategory(list[MethodScore] mscores, totalLinesOfCode){
@@ -106,6 +81,13 @@ private tuple[int, int, int, int] groupSizeByRiskGroup(list[MethodScore] mss){
 	return score;
 }
 
+/**
+Group score according to McCabe's categorisation
+1-10 low risk
+11-20 moderate risk
+21-50 high risk
+50+ very high risk
+*/
 private tuple[int, int, int, int] groupComplexityByRiskGroup(list[MethodScore] mss){
 	tuple[int,int,int,int] score = <0,0,0,0>;
 	
@@ -135,12 +117,6 @@ private tuple[int, int, int, int] groupComplexityByRiskGroup(list[MethodScore] m
 private tuple[real, real, real, real] relative(tuple[int,int,int,int] abs, int total){
 	return <percentage(abs[0],total),percentage(abs[1],total),percentage(abs[2],total),percentage(abs[3],total)>;
 }
-
-private real percentage(int x, int total){
-	return (toReal(x)*100.0)/total;
-}
-
-
 
 private str calculateRank(tuple[real, real, real, real] rls){
 	if(rls[1] <= 25 && rls[2]<=0 && rls[3]<=0){

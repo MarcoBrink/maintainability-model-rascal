@@ -6,17 +6,19 @@ import util::Math;
 
 import lang::java::m3::AST;
 import lang::java::m3::Core;
+
 import metrics::UnitComplexityMetric;
 import metrics::DuplicationMetric;
 import metrics::VolumeMetric;
+import metrics::TestCoverageMetric;
 
 import metrics::calculations::Normalize;
 
 
 public void startAnalyses(){
 	//loc currentProject = |project://consumer|;
-	//loc currentProject = |project://Jabberpoint-le3|;
-	loc currentProject = |project://testProject|;
+	loc currentProject = |project://Jabberpoint-le3|;
+	//loc currentProject = |project://testProject|;
 	//loc currentProject = |project://hsqldb|;
 	//1loc currentProject = |project://smallsql|;
 
@@ -27,18 +29,17 @@ public void startAnalyses(loc currentProject ){
 	
 	tuple[map[loc, list[str]] normalizedFiles, VolumeInfo metadata] result = normalizeFiles(currentProject);
 	
-	//calc volume
+	//calc volume metrics
 	calculateVolume(result.metadata);
-	//calc complexity per unit and unit Size
-	//calculateUnitMetrics(methods);
 	
-	//display unit size
+	//calculate  unit size and complexity metrics
 	calculateUnitSizeAndComplexity(currentProject);
 	
-	//calc duplication
+	//calc duplication metrics
 	calculateDuplication(currentProject, result.normalizedFiles);
 	
-	//calc unit testing
+	//calc unit testing metrics
+	calculateTestCoverage(currentProject, result.metadata.codeLines);
 }
 
 private void calculateVolume(VolumeInfo metadata)
@@ -106,3 +107,15 @@ private void calculateDuplication(loc project, map[loc, list[str]] normalizedFil
 	println();
 	println("------------------End Duplication Metrics------------------");
 }
+
+private void calculateTestCoverage(loc currentProject, int totalLOC){
+  tuple[int, real] score = calculateTestCoverageMetrics(currentProject, totalLOC);
+  <numberOfAsserts, locPerAssert> = score;
+ 
+  println("-----------------Start TestCoverage Metrics-----------------");
+  println();
+  println("Found: "+toString(numberOfAsserts)+" assert statements");
+  println("Average lines of code per assert: "+toString(locPerAssert));
+  println();
+  println("-----------------End TestCoverage Metrics-----------------");
+ }

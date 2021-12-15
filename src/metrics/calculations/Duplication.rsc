@@ -26,13 +26,12 @@ public real calculateDuplicationPercentage(loc project, map[loc, list[str]] norm
 	  	int numberOfLines = size(lineblocks[key]);
 	  	if(numberOfLines>blockSize){
 	  	 duplicateLines += lineblocks[key];
-	  
 	  	}
 	}
   	
-  	set[str] duplicteLinesWithoutClones = {x| x<-duplicateLines, !startsWith(x, "|newline|")};
+  	set[str] duplicteLinesWithOnlyClones = {x| x<-duplicateLines, !startsWith(x, "|newline|")};
   	
-  	int duplicateLinesSize = size(duplicteLinesWithoutClones); 
+  	int duplicateLinesSize = size(duplicteLinesWithOnlyClones); 
  
   	return toReal(duplicateLinesSize*100.0)/totalLines;
 }

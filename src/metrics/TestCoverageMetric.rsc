@@ -1,47 +1,64 @@
 module metrics::TestCoverageMetric
-
+import Util;
 import util::Resources;
 import util::Benchmark;
 import lang::java::m3::AST;
 import lang::java::m3::Core;
+
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
+
+import util::Math;
 import IO;
-import Set;
+import String;
 
-public void test1(){
-loc project = |project://test|;
-//set[loc] bestanden  = { a | /file(a) <- getProject(project), a.extension == "java" };
-M3 model = createM3FromEclipseProject(project);
-
-rel[loc from, loc to] methodInvocations = model.methodInvocation;
-//rel[loc from, loc to] methodAnnotations = model.annotations;
+import metrics::calculations::Normalize;
 
 
-//step 1 get All Methods
-set[Declaration] methods = findAllMethodsInProject(project);
-<d, _ > = takeOneFrom(methods);
-(_,_,_,_,s) <- d;
-println(s);
 
-//step 2 find all Unit Tests in Project
-rel[loc from, loc to] methodAnnotations = model.annotations;
-
-list[loc] l = [<x,y> <- methodAnnotations, y.path == "/org/junit/Test"];
+public tuple[int, real] test1(){
+  loc project = |project://hsqldb|;
+  //loc project = |project://Jabberpoint-le3|;
+  //loc project = |project://test|;
  
-
-//println(methodAnnotations);
+ tuple[int, real] result = calculateTestCoverageMetrics(project);  
+ <numberOfAsserts, locPerAssert> = result;
+ println("Found: "+toString(numberOfAsserts)+" assert statements");
+ println("Average lines of code per assert: "+toString(locPerAssert));
+ return result;
 }
 
-private set[Declaration] findAllMethodsInProject(loc currentProject){
-	set[Declaration] declarations = createAstsFromEclipseProject(currentProject, true); //Move to analyze??
-	return allMethods(declarations);
+public tuple[int, real] calculateTestCoverageMetrics(loc project){
+  set[Declaration] asts = createAstsFromEclipseProject(project, true);
+  
+  tuple[map[loc, list[str]] normalizedFiles, VolumeInfo metadata] result = normalizeFiles(project);
+  int totalLOC = result.metadata.codeLines;
+  return calculateTestCoverageMetrics(asts, totalLOC);
 }
 
-private set[Declaration] allMethods(set[Declaration] decls){
-	results = {};
-	visit(decls){
-		case m: \method(_,_,_,_, Statement s): results += m;
-	}
-	return results; 
+public tuple[int, real] calculateTestCoverageMetrics(loc project, int totalLOC){
+  set[Declaration] asts = createAstsFromEclipseProject(project, true);
+  return calculateTestCoverageMetrics(asts, totalLOC);
+}
+
+public tuple[int, real] calculateTestCoverageMetrics(set[Declaration] asts, int totalLOC){
+  int count = 0;
+  visit(asts){
+	case m: \method(_,_, _,_, Statement implementation): count+= countAsserts(implementation);
+  }
+  if(count == 0){
+    return <0, 0.0>;
+  }
+  return <count,toReal(totalLOC)/count>;
+}
+
+private int countAsserts(Statement implementation){
+  int count = 0;
+  visit(implementation) {
+    case \assert(_,_): count += 1;
+	case \assert(_): count += 1;
+	case \methodCall(_,_,n,_): if(startsWith(n,"assert")){count += 1;}
+	case \methodCall(_,n,_): if(startsWith(n,"assert")){count += 1;}
+  }
+  return count;		  
 }

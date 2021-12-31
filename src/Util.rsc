@@ -1,28 +1,12 @@
 module Util
 
-import lang::java::m3::AST;
-import lang::java::m3::Core;
-import lang::java::jdt::m3::Core;
-import lang::java::jdt::m3::AST;
 import util::Math;
 import util::Resources;
 
-alias Methods = rel[loc, Statement];
-alias MethodScore = tuple[loc, Statement, int, int]; //location, Method, Number of lines, and UnitComplexity Score.
-
-public Methods findAllMethodsInProject(loc currentProject){
-	set[Declaration] declarations = createAstsFromEclipseProject(currentProject, true); //Move to analyze??
-	return allMethods(declarations);
-}
-
-public Methods allMethods(set[Declaration] decls){
-	results = {};
-	visit(decls){
-		case m: \method(_,_,_,_, Statement s): results += <m.src, s>;
-		case c: \constructor(_,_,_, Statement s): results += <c.src, s>;
-	}
-	return results; 
-}
+import IO;
+import Set;
+import List;
+import String;
 
 public real percentage(int x, int total){
 	if(x == 0|| total == 0){
@@ -31,6 +15,55 @@ public real percentage(int x, int total){
 	return (toReal(x)*100.0)/total;
 }
 
+public str trim(str s){
+	return String::trim(s);
+}
+
+public str toString(num n){
+	return util::Math::toString(n);
+}
+
+public real toReal(num n){
+	return util::Math::toReal(n);
+}
+
+public int sum(list[value] l){
+	return List::sum([0]+l);
+}
+
+public int sum(set[value] s){
+	return Set::sum({0}+s);
+}
+
+public int size(list[value] l){
+	return List::size(l);
+}
+
+public int size(set[value] s){
+	return Set::size(s);
+}
+
+public str formatPercentage(real n){
+	real r = round(n, 0.1);
+	s = toString(r)+"%";
+	while(size(s) < 6){
+	 s =s+ " ";
+	}
+	return s;
+}
+
 public set[loc] fetchFiles(loc project){
 	return { a | /file(a) <- getProject(project), a.extension == "java" };
+}
+
+public list[str] readFileLines(loc l){
+	return IO::readFileLines(l);
+}
+
+public void println(str s){
+	return IO::println(s);
+}
+
+public void println(){
+	return IO::println();
 }

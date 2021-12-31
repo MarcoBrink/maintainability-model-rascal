@@ -1,37 +1,66 @@
 module metrics::UnitComplexityMetric
 
-import lang::java::m3::AST;
-import lang::java::m3::Core;
-import lang::java::jdt::m3::Core;
+//import lang::java::m3::AST;
+//import lang::java::m3::Core;
+//import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
+import metrics::rankings::UnitRanking;
 import metrics::calculations::CyclomaticComplexity;
 import metrics::calculations::Normalize;
+
+import SIGRanking;
 import Util;
 
-import List; 
-import Set;
-import util::Math;
-
+alias Methods = rel[loc, Statement];
 alias UnitScores = tuple[real, real, real, real]; // low, moderate, high, very_high
+alias MethodScore = tuple[loc, Statement, int, int]; //location, Method, Number of lines, and UnitComplexity Score.
 
-public list[tuple[UnitScores,str]] calculateUnitMetrics(loc project) {	
+alias UnitComplexityScores = tuple[UnitScores scores, Ranking rating];
+alias UnitSizeScores = tuple[UnitScores scores, Ranking rating];
+
+alias UnitMetricsResult = tuple[UnitSizeScores unitSizeScores, UnitComplexityScores unitComplexityScores, int totalUnits, real averageUnitSize, real averageUnitComplexity];
+
+public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {	
 	
-	Methods methods = findAllMethodsInProject(project);
+	Methods methods = allMethods(declarations);
 	list[MethodScore] mscores = calculateVolumeAndComplexityPerUnit(methods);
 	
+	scores = [x|<_,_,_,x> <- mscores];
+	int sumCC = sum(scores);
+	int totalUnits = size(scores);
 	int totalLinesOfCode = totalLinesOfCodeOfAllMethods(mscores);
 	
+	real averageComplexity = 1.0;
+	real averageSize = 0.0;
+	
+	if(totalUnits >0){
+	  averageComplexity = toReal(sumCC)/totalUnits;
+	  averageSize = toReal(totalLinesOfCode)/totalUnits;
+	}
+	
+	
+	
 	UnitScores unitSizeCategories = calculateUnitSizePerCategory(mscores, totalLinesOfCode);
-	str sizeRank = calculateRank(unitSizeCategories);
+	Ranking sizeRank = getUnitRanking(unitSizeCategories);
 	
 	UnitScores unitComplexityCategories = calculateUnitComplexityPerCategory(mscores, totalLinesOfCode);
-	str complexityRank = calculateRank(unitComplexityCategories);
+	Ranking complexityRank = getUnitRanking(unitComplexityCategories);
 	
-	return [<unitSizeCategories,sizeRank>,<unitComplexityCategories,complexityRank>];
+	return <<unitSizeCategories,sizeRank>,<unitComplexityCategories,complexityRank>, totalUnits, averageSize, averageComplexity>;
+}
+
+public Methods allMethods(set[Declaration] decls){
+	results = {};
+	visit(decls){
+		case m: \method(_,_,_,_, Statement s): results += <m.src, s>;
+		case c: \constructor(_,_,_, Statement s): results += <c.src, s>;
+	}
+	return results; 
 }
 
 private list[MethodScore] calculateVolumeAndComplexityPerUnit(Methods methods){
+    //normalize from metrics::calculations::Normalize
 	return [<a,b,normalizedUnit.metadata.codeLines,calcCC(b)> | <a,b> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
 }
 
@@ -94,6 +123,7 @@ private tuple[int, int, int, int] groupComplexityByRiskGroup(list[MethodScore] m
 	for(ms <-mss){
 		int x = ms[3];
 		int lines = ms[2];
+	
 		if(x>50){
 			score = <score[0],score[1],score[2],score[3]+lines>;
 			continue;		
@@ -116,25 +146,4 @@ private tuple[int, int, int, int] groupComplexityByRiskGroup(list[MethodScore] m
 
 private tuple[real, real, real, real] relative(tuple[int,int,int,int] abs, int total){
 	return <percentage(abs[0],total),percentage(abs[1],total),percentage(abs[2],total),percentage(abs[3],total)>;
-}
-
-private str calculateRank(tuple[real, real, real, real] rls){
-	if(rls[1] <= 25 && rls[2]<=0 && rls[3]<=0){
-		return "++";
-	}
-
-	if(rls[1] <= 30 && rls[2]<=5 && rls[3]<=0){
-		return "+";
-	}
-	
-	if(rls[1] <= 40 && rls[2]<=10 && rls[3]<=0){
-		return "o";
-	}
-	
-
-	if(rls[1] <= 50 && rls[2]<=15 && rls[3]<=5){
-		return "-";
-	}
-	
-	return "--";
 }

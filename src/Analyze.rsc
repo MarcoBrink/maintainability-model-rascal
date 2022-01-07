@@ -17,10 +17,11 @@ import metrics::calculations::Normalize;
 
 public void startAnalyses(){
 	//loc currentProject = |project://consumer|;
-	loc currentProject = |project://Jabberpoint-le3|;
+	//loc currentProject = |project://Jabberpoint-le3|;
 	//loc currentProject = |project://testProject|;
 	//loc currentProject = |project://hsqldb|;
-	//1loc currentProject = |project://smallsql|;
+	//loc currentProject = |project://smallsql|;
+	loc currentProject = |project://smallsql-1|;
 
 	startAnalyses(currentProject);
 }

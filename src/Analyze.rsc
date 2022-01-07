@@ -1,21 +1,26 @@
 module Analyze
 
 import lang::java::jdt::m3::AST;
+import lang::java::jdt::m3::Core;
 
 import metrics::UnitComplexityMetric;
 import metrics::DuplicationMetric;
 import metrics::VolumeMetric;
 import metrics::TestCoverageMetric;
 
+import visualisation::Window;
+
 import SIGRanking;
+import Results;
+
 import Util;
 
 public void startAnalyses(){
 	//loc currentProject = |project://consumer|;
 	//loc currentProject = |project://Jabberpoint-le3|;
 	//loc currentProject = |project://testProject|;
-	loc currentProject = |project://hsqldb|;
-	//loc currentProject = |project://smallsql|;
+	//loc currentProject = |project://hsqldb|;
+	loc currentProject = |project://smallsql|;
 
 	startAnalyses(currentProject, true);
 }
@@ -23,31 +28,31 @@ public void startAnalyses(){
 public void startAnalyses(loc project, bool print){
 	//calc volume metrics
 	//from metrics::VolumeMetric
-	VolumeMetricsResult volResult = calculateVolumeMetrics(project);
-	Ranking volumeRating = volResult.ranking;
+	VolumeMetricsResult volumeMetricsResult = calculateVolumeMetrics(project);
+	Ranking volumeRating = volumeMetricsResult.ranking;
 	
 	//calculate  unit size and complexity metrics
 	set[Declaration] declarations = createAstsFromEclipseProject(project, true);
 	//from metrics::UnitComplexity
-	UnitMetricsResult unitResult = calculateUnitMetrics(declarations);
-	Ranking unitSizeRating = unitResult.unitSizeScores.rating;
-	Ranking unitComplexityRating = unitResult.unitComplexityScores.rating;
+	UnitMetricsResult unitMetricsResult = calculateUnitMetrics(declarations);
+	Ranking unitSizeRating = unitMetricsResult.unitSizeScores.rating;
+	Ranking unitComplexityRating = unitMetricsResult.unitComplexityScores.rating;
 	
 	//calc duplication metrics
 	//from metrics::DuplicationMetric
-	DuplicationMetricsResult dupResult = calculateDuplicationMetrics(volResult.normalizedFiles);
-	Ranking duplicationRating = dupResult.rating;
+	DuplicationMetricsResult duplicationMetricsResult = calculateDuplicationMetrics(volumeMetricsResult.normalizedFiles);
+	Ranking duplicationRating = duplicationMetricsResult.ranking;
 	
 	//calc unit testing metrics
-	TestCoverageMetricResult testResult = calculateTestCoverageMetrics(declarations, volResult.codeLines, unitResult.totalUnits, unitResult.averageUnitComplexity);
-	Ranking testCoverageRating = testResult.ranking;
+	TestCoverageMetricResult testCoverageMetricResult = calculateTestCoverageMetrics(declarations, volumeMetricsResult.codeLines, unitMetricsResult.totalUnits, unitMetricsResult.averageUnitComplexity);
+	Ranking testCoverageRating = testCoverageMetricResult.ranking;
 	
 	//print results
 	if(print){
-	  printVolumeMetrics(volResult);
-	  printUnitSizeAndComplexity(unitResult);
-	  printDuplicationScore(dupResult);
-	  printTestCoverage(testResult);	
+	  printVolumeMetrics(volumeMetricsResult);
+	  printUnitSizeAndComplexity(unitMetricsResult);
+	  printDuplicationScore(duplicationMetricsResult);
+	  printTestCoverage(testCoverageMetricResult);	
 	}
 	
 	
@@ -66,6 +71,17 @@ public void startAnalyses(loc project, bool print){
 		println("--------------------------------------------");
 		println("Overall Maintainability: "+maintainability.rating);
 	}
+	
+	Results _results = results(
+		unitMetricsResult,
+ 		duplicationMetricsResult,
+ 		testCoverageMetricResult,
+ 		volumeMetricsResult
+  	);
+  	
+	//start visualisation
+	M3 model = createM3FromEclipseProject(project);
+	begin({model},_results);
 }
 
 private void printVolumeMetrics(VolumeMetricsResult volResult) {	
@@ -112,9 +128,9 @@ private void printDuplicationScore(DuplicationMetricsResult score){
 	println("-----------------Start Duplication Metrics-----------------");
 	println();
 	println("Results of duplication analyses.");
-	println("Duplication: "+formatPercentage(score[0]));
+	println("Duplication: "+formatPercentage(score.percentage));
 	println();
-	println("Overal Duplication Risk Ranking: "+score[1].rating);
+	println("Overal Duplication Risk Ranking: "+score.ranking.rating);
 	println();
 	println("------------------End Duplication Metrics------------------");
 }

@@ -1,35 +1,17 @@
 module metrics::VolumeMetric
 
 import metrics::calculations::Normalize;
+import metrics::rankings::VolumeRanking;
 
-public str calculateVolumeMetrics(VolumeInfo metadata)
+import SIGRanking;
+
+alias VolumeMetricsResult = tuple[Ranking ranking, map[loc, list[str]] normalizedFiles, int files, int totalLines, int codeLines, int blankLines];
+
+public VolumeMetricsResult calculateVolumeMetrics(loc project)
 {
-	return  getVolumeRanking(metadata.codeLines);
+	NormalizedData normalized = normalizeFiles(project);
+	Ranking ranking =  getVolumeRanking(normalized.volumeInfo.codeLines);
+	
+	return <ranking, normalized.normalizedFiles, normalized.volumeInfo.files, normalized.volumeInfo.totalLines, normalized.volumeInfo.codeLines, normalized.volumeInfo.blankLines>;
 }
 
-private str getVolumeRanking(int totalLinesOfCode)
-{
-	int KLOC = totalLinesOfCode / 1000;
-	
-	if(KLOC < 66)
-	{
-		return "++";
-	}
-	
-	if(KLOC < 246)
-	{
-		return "+";
-	}
-	
-	if(KLOC < 665)
-	{
-		return "o";
-	}
-	
-	if(KLOC < 1310)
-	{
-		return "-";
-	}
-	
-	return "--";
-}

@@ -2,7 +2,6 @@ module metrics::calculations::CyclomaticComplexity
 
 import lang::java::m3::AST;
 import lang::java::m3::Core;
-//import IO;
 
 
 /**

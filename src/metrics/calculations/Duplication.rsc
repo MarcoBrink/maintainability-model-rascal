@@ -1,21 +1,15 @@
 module metrics::calculations::Duplication
 
+import List;
+import String;
 import Util;
 
-import util::Math;
+private int blockSize = 6; // Sig defined standard codeblock size.
 
-import String;
-import List;
-import Set;
-
-private int blockSize = 6; // Sig defined standaard codeblock size.
-
-public real calculateDuplicationPercentage(loc project, map[loc, list[str]] normalizedFiles){	
-	set[loc] files = fetchFiles(project);
-	
+public real calculateDuplicationPercentage(map[loc, list[str]] normalizedFiles){	
   	map[str, set[str]] lineblocks = ();
   	int totalLines = 0;
-  	for(loc l <- files){
+  	for(l <- normalizedFiles){
   		<total, result> = calculateDuplicationPerFile(l, normalizedFiles[l], blockSize, lineblocks); 
   		lineblocks = result;
   		totalLines += total;

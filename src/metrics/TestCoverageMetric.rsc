@@ -1,55 +1,32 @@
 module metrics::TestCoverageMetric
-import Util;
-import util::Resources;
-import util::Benchmark;
-import lang::java::m3::AST;
-import lang::java::m3::Core;
 
-import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
 import util::Math;
-import IO;
 import String;
 
 import metrics::calculations::Normalize;
+import metrics::rankings::TestCoverageRanking;
 
+import Util;
+import SIGRanking;
 
+alias TestCoverageMetricResult = tuple[Ranking ranking, int totalAsserts, real coverage];
 
-public tuple[int, real] test1(){
-  loc project = |project://hsqldb|;
-  //loc project = |project://Jabberpoint-le3|;
-  //loc project = |project://test|;
- 
- tuple[int, real] result = calculateTestCoverageMetrics(project);  
- <numberOfAsserts, locPerAssert> = result;
- println("Found: "+toString(numberOfAsserts)+" assert statements");
- println("Average lines of code per assert: "+toString(locPerAssert));
- return result;
-}
-
-public tuple[int, real] calculateTestCoverageMetrics(loc project){
-  set[Declaration] asts = createAstsFromEclipseProject(project, true);
-  
-  tuple[map[loc, list[str]] normalizedFiles, VolumeInfo metadata] result = normalizeFiles(project);
-  int totalLOC = result.metadata.codeLines;
-  return calculateTestCoverageMetrics(asts, totalLOC);
-}
-
-public tuple[int, real] calculateTestCoverageMetrics(loc project, int totalLOC){
-  set[Declaration] asts = createAstsFromEclipseProject(project, true);
-  return calculateTestCoverageMetrics(asts, totalLOC);
-}
-
-public tuple[int, real] calculateTestCoverageMetrics(set[Declaration] asts, int totalLOC){
+public TestCoverageMetricResult calculateTestCoverageMetrics(set[Declaration] asts, int totalLOC, int totalUnits, real averageUnitComplexity){
   int count = 0;
+  
   visit(asts){
 	case m: \method(_,_, _,_, Statement implementation): count+= countAsserts(implementation);
   }
+  
   if(count == 0){
-    return <0, 0.0>;
+    return <VERY_LOW, 0, 0.0>;
   }
-  return <count,toReal(totalLOC)/count>;
+  
+  Ranking ranking = getTestCoverageRanking(count, totalUnits, averageUnitComplexity);
+  
+  return <ranking, count, toReal(totalLOC)/count>;
 }
 
 private int countAsserts(Statement implementation){

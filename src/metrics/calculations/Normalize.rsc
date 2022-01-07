@@ -1,30 +1,30 @@
 module metrics::calculations::Normalize
 
-import IO;
-import String;
-import Set;
-
-import Util;
-
 import lang::java::m3::AST;
 import lang::java::m3::Core;
 
-alias VolumeInfo = tuple[int files, int totalLines, int codeLines, int blankLines];
+import String;
 
-public tuple[map[loc, list[str]], VolumeInfo] normalizeFiles(loc project)
+import metrics::VolumeMetric;
+import Util;
+
+alias VolumeInfo = tuple[int files, int totalLines, int codeLines, int blankLines];
+alias NormalizedData = tuple[map[loc, list[str]] normalizedFiles, VolumeInfo volumeInfo];
+
+public NormalizedData normalizeFiles(loc project)
 {
-	VolumeInfo metadata = <0,0,0,0>;
+	VolumeInfo volumeInfo = <0,0,0,0>;
 	set[loc] bestanden = fetchFiles(project);
 	map[loc, list[str]] normalizedFiles = (); 
-	metadata.files = size(bestanden);
+	volumeInfo.files = size(bestanden);
 	
  	for(loc l <- bestanden){
-  		<normalizedFile, cumulativeVolumeInfo> = normalize(l, metadata);
+  		<normalizedFile, cumulativeVolumeInfo> = normalize(l, volumeInfo);
   		normalizedFiles += (l : normalizedFile);
-  		metadata = cumulativeVolumeInfo;
+  		volumeInfo = cumulativeVolumeInfo;
   	}
   	
-  	return <normalizedFiles, metadata>;
+  	return <normalizedFiles, volumeInfo>;
 }
 
 public tuple[list[str],VolumeInfo] normalize(loc location){

@@ -4,8 +4,9 @@ import metrics::calculations::Normalize;
 import metrics::rankings::VolumeRanking;
 
 import SIGRanking;
+import Results;
 
-alias VolumeMetricsResult = tuple[Ranking ranking, map[loc, list[str]] normalizedFiles, int files, int totalLines, int codeLines, int blankLines];
+//alias VolumeMetricsResult = tuple[Ranking ranking, map[loc, list[str]] normalizedFiles, int files, int totalLines, int codeLines, int blankLines];
 
 public VolumeMetricsResult calculateVolumeMetrics(loc project)
 {

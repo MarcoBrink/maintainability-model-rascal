@@ -10,8 +10,7 @@ import metrics::rankings::TestCoverageRanking;
 
 import Util;
 import SIGRanking;
-
-alias TestCoverageMetricResult = tuple[Ranking ranking, int totalAsserts, real coverage];
+import Results;
 
 public TestCoverageMetricResult calculateTestCoverageMetrics(set[Declaration] asts, int totalLOC, int totalUnits, real averageUnitComplexity){
   int count = 0;

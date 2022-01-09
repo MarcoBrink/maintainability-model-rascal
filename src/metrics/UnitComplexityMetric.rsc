@@ -10,16 +10,17 @@ import metrics::calculations::CyclomaticComplexity;
 import metrics::calculations::Normalize;
 
 import SIGRanking;
+import Results;
 import Util;
 
 alias Methods = rel[loc, Statement];
-alias UnitScores = tuple[real, real, real, real]; // low, moderate, high, very_high
+//alias UnitScores = tuple[real, real, real, real]; // low, moderate, high, very_high
 alias MethodScore = tuple[loc, Statement, int, int]; //location, Method, Number of lines, and UnitComplexity Score.
 
-alias UnitComplexityScores = tuple[UnitScores scores, Ranking rating];
-alias UnitSizeScores = tuple[UnitScores scores, Ranking rating];
+//alias UnitComplexityScores = tuple[UnitScores scores, Ranking rating];
+//alias UnitSizeScores = tuple[UnitScores scores, Ranking rating];
 
-alias UnitMetricsResult = tuple[UnitSizeScores unitSizeScores, UnitComplexityScores unitComplexityScores, int totalUnits, real averageUnitSize, real averageUnitComplexity];
+//alias UnitMetricsResult = tuple[UnitSizeScores unitSizeScores, UnitComplexityScores unitComplexityScores, int totalUnits, real averageUnitSize, real averageUnitComplexity];
 
 public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {	
 	
@@ -51,12 +52,12 @@ public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {
 }
 
 public Methods allMethods(set[Declaration] decls){
-	results = {};
+	methods = {};
 	visit(decls){
-		case m: \method(_,_,_,_, Statement s): results += <m.src, s>;
-		case c: \constructor(_,_,_, Statement s): results += <c.src, s>;
+		case m: \method(_,_,_,_, Statement s): methods += <m.src, s>;
+		case c: \constructor(_,_,_, Statement s): methods += <c.src, s>;
 	}
-	return results; 
+	return methods; 
 }
 
 private list[MethodScore] calculateVolumeAndComplexityPerUnit(Methods methods){

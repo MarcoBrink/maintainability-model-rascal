@@ -10,6 +10,7 @@ public Ranking HIGH = score("High", "+",4);
 public Ranking MODEST = score("Modest", "o",3);
 public Ranking LOW = score("Low", "-", 2);
 public Ranking VERY_LOW = score("Very Low", "--", 1);
+public Ranking UNKNOWN = score("unknown", "", 0);
 
 public Ranking getRanking(int val){
 	switch(val){
@@ -17,7 +18,8 @@ public Ranking getRanking(int val){
 	  case 4: return HIGH;
 	  case 3: return MODEST;
 	  case 2: return LOW;
-	  default: return VERY_LOW;
+	  case 1 : return VERY_LOW;
+	  default: return UNKNOWN;
 	}
 }
 

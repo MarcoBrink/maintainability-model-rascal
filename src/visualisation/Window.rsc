@@ -15,6 +15,7 @@ import util::Math;
 
 import visualisation::ProjectBrowser;
 import visualisation::MethodInformationPanel;
+import visualisation::ScatterPlotPanel;
 import visualisation::ComplexityTreemapPanel;
 import visualisation::AnalysisResults;
 import visualisation::SettingsPanel;
@@ -121,7 +122,7 @@ void begin(set[M3] models, Results results) {
 			 	panel(projectBrowser(models), "", 0),
 			 	maintainabilityRankingPanel(results),
 			 	fswitch(int(){return currentIndex;},[
-			 		welcomePanel(),
+			 		scatterPlotPanel(results),
 			 		createDummyFigure(),//methodInformationPanel(),
 			 		createDummyFigure(),//complexityTreemapPanel(),
 			 		settingsPanel()

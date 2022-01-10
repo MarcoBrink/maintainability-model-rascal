@@ -14,14 +14,14 @@ import Results;
 import Util;
 
 alias Methods = rel[loc, Statement];
-//alias UnitScores = tuple[real, real, real, real]; // low, moderate, high, very_high
 
-//alias UnitComplexityScores = tuple[UnitScores scores, Ranking rating];
-//alias UnitSizeScores = tuple[UnitScores scores, Ranking rating];
+private int maxComplexity = 0;
+private int maxLoc = 0;
 
-//alias UnitMetricsResult = tuple[UnitSizeScores unitSizeScores, UnitComplexityScores unitComplexityScores, int totalUnits, real averageUnitSize, real averageUnitComplexity];
 
 public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {	
+	maxComplexity = 0;
+	maxLoc = 0;
 	
 	Methods methods = allMethods(declarations);
 	list[MethodScore] mscores = calculateVolumeAndComplexityPerUnit(methods);
@@ -47,7 +47,7 @@ public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {
 	UnitScores unitComplexityCategories = calculateUnitComplexityPerCategory(mscores, totalLinesOfCode);
 	Ranking complexityRank = getUnitRanking(unitComplexityCategories);
 	
-	return <<unitSizeCategories,sizeRank>,<unitComplexityCategories,complexityRank>, totalUnits, averageSize, averageComplexity, mscores>;
+	return <<unitSizeCategories,sizeRank>,<unitComplexityCategories,complexityRank>, totalUnits, averageSize, averageComplexity, mscores, maxComplexity, maxLoc>;
 }
 
 public Methods allMethods(set[Declaration] decls){
@@ -61,13 +61,26 @@ public Methods allMethods(set[Declaration] decls){
 
 private list[MethodScore] calculateVolumeAndComplexityPerUnit(Methods methods){
     //normalize from metrics::calculations::Normalize
-	return [<a,b,normalizedUnit.metadata.codeLines,calcCC(b)> | <a,b> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
+	return [<a,b,updateMaxLoc(normalizedUnit.metadata.codeLines),calcCC(b)> | <a,b> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
 }
 
 private int calcCC(Statement statement) {
 	//method from metrics::calculations::CyclomaticComplexity;
 	int result = calculateCyclomaticComplexityPerUnit(statement);
+	if(result > maxComplexity)
+	{
+		maxComplexity = result;
+	}
 	return result;
+}
+
+private int updateMaxLoc(int lines)
+{
+	if(lines > maxLoc)
+	{
+		maxLoc = lines;
+	}
+	return lines;
 }
 
 private int totalLinesOfCodeOfAllMethods(list[MethodScore] ms){

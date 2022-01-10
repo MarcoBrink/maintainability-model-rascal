@@ -15,7 +15,6 @@ import Util;
 
 alias Methods = rel[loc, Statement];
 //alias UnitScores = tuple[real, real, real, real]; // low, moderate, high, very_high
-alias MethodScore = tuple[loc, Statement, int, int]; //location, Method, Number of lines, and UnitComplexity Score.
 
 //alias UnitComplexityScores = tuple[UnitScores scores, Ranking rating];
 //alias UnitSizeScores = tuple[UnitScores scores, Ranking rating];
@@ -48,7 +47,7 @@ public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {
 	UnitScores unitComplexityCategories = calculateUnitComplexityPerCategory(mscores, totalLinesOfCode);
 	Ranking complexityRank = getUnitRanking(unitComplexityCategories);
 	
-	return <<unitSizeCategories,sizeRank>,<unitComplexityCategories,complexityRank>, totalUnits, averageSize, averageComplexity>;
+	return <<unitSizeCategories,sizeRank>,<unitComplexityCategories,complexityRank>, totalUnits, averageSize, averageComplexity, mscores>;
 }
 
 public Methods allMethods(set[Declaration] decls){

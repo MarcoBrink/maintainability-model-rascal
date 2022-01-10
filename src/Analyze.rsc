@@ -17,17 +17,17 @@ import Util;
 
 public void startAnalyses(){
 	//loc currentProject = |project://consumer|;
-	//loc currentProject = |project://Jabberpoint-le3|;
+	loc currentProject = |project://Jabberpoint|;
 	//loc currentProject = |project://testProject|;
 
 	//loc currentProject = |project://hsqldb|;
-	loc currentProject = |project://smallsql|;
+	//loc currentProject = |project://smallsql|;
 	startAnalyses(currentProject, true);
 }
 
 public void startAnalyses(loc project, bool print){
 	//calc volume metrics
-	//from metrics::VolumeMetric
+	//from metrics::VolumeMetric 
 	VolumeMetricsResult volumeMetricsResult = calculateVolumeMetrics(project);
 	Ranking volumeRating = volumeMetricsResult.ranking;
 	

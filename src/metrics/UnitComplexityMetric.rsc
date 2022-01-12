@@ -47,7 +47,7 @@ public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {
 	UnitScores unitComplexityCategories = calculateUnitComplexityPerCategory(mscores, totalLinesOfCode);
 	Ranking complexityRank = getUnitRanking(unitComplexityCategories);
 	
-	return <<unitSizeCategories,sizeRank>,<unitComplexityCategories,complexityRank>, totalUnits, averageSize, averageComplexity, mscores, maxComplexity, maxLoc>;
+	return <<unitSizeCategories,sizeRank>,<unitComplexityCategories,complexityRank>, totalUnits, averageSize, averageComplexity, mscores, maxComplexity, maxLoc, totalLinesOfCode>;
 }
 
 public Methods allMethods(set[Declaration] decls){

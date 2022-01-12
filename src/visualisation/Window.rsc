@@ -16,6 +16,7 @@ import util::Math;
 import visualisation::ProjectBrowser;
 import visualisation::MethodInformationPanel;
 import visualisation::ScatterPlotPanel;
+import visualisation::TreemapPanel;
 import visualisation::ComplexityTreemapPanel;
 import visualisation::AnalysisResults;
 import visualisation::SettingsPanel;
@@ -26,7 +27,7 @@ import analysis::graphs::Graph;
 
 import Results;
 
-private int numberOfPanels = 3;
+private int numberOfPanels = 2;
 private int previousIndex = 0;
 private int currentIndex = 0;
 
@@ -136,9 +137,7 @@ void begin(list[Results] results) {
 			 	maintainabilityRankingPanel(results[0]),
 			 	fswitch(int(){return currentIndex;},[
 			 		scatterPlotPanel(results[0]),
-			 		createDummyFigure(),//methodInformationPanel(),
-			 		createDummyFigure(),//complexityTreemapPanel(),
-			 		settingsPanel()
+			 		TreemapPanel(results[0])
 			 	])
 				 ),
 			 footer("Copyright by A. Walgreen & E. Postma ©2019\t")

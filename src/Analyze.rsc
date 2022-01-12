@@ -22,7 +22,9 @@ public void startAnalyses(){
 	loc p3 = |project://testProject|;
 	loc p4 = |project://hsqldb|;
 	loc p5 = |project://smallsql|;
-	startAnalyses([p1,p2,p3,p4,p5], true);
+	loc p6 = |project://Jabberpoint|;
+	
+	startAnalyses([p1,p2,p3,p4,p5,p6], true);
 }
 
 public void startAnalyses(list[loc] projects, bool print){

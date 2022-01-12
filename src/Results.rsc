@@ -13,7 +13,7 @@ alias MethodScore = tuple[loc, Statement, int, int]; //location, Method, Number 
 alias UnitComplexityScores = tuple[UnitScores scores, Ranking rating];
 alias UnitSizeScores       = tuple[UnitScores scores, Ranking rating];
 
-alias UnitMetricsResult = tuple[UnitSizeScores unitSizeScores, UnitComplexityScores unitComplexityScores, int totalUnits, real averageUnitSize, real averageUnitComplexity, list[MethodScore] mscores, int maxComplexity, int maxLoc];
+alias UnitMetricsResult = tuple[UnitSizeScores unitSizeScores, UnitComplexityScores unitComplexityScores, int totalUnits, real averageUnitSize, real averageUnitComplexity, list[MethodScore] mscores, int maxComplexity, int maxLoc, int totalUnitLines];
 
 alias DuplicationMetricsResult = tuple[Ranking ranking, real percentage];
 alias TestCoverageMetricResult = tuple[Ranking ranking, int totalAsserts, real coverage];

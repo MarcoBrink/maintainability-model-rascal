@@ -52,7 +52,7 @@ public bool pb_initialize(bool force) {
 		pb_addProjectRefreshRequestEventListener(onProjectRefreshRequest);
 	
 		pb_setLocation(RootLocation);
-		
+
 		_isInitialized = true;
 		return true;
 	}

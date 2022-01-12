@@ -14,20 +14,41 @@ import SIGRanking;
 import Results;
 
 import Util;
+import Cache;
 
 public void startAnalyses(){
-	//loc currentProject = |project://consumer|;
-	loc currentProject = |project://Jabberpoint-le3|;
-	//loc currentProject = |project://testProject|;
-	//loc currentProject = |project://hsqldb|;
-	//loc currentProject = |project://smallsql|;
-
-	startAnalyses(currentProject, true);
+	loc p1 = |project://consumer|;
+	loc p2 = |project://Jabberpoint-le3|;
+	loc p3 = |project://testProject|;
+	loc p4 = |project://hsqldb|;
+	loc p5 = |project://smallsql|;
+	startAnalyses([p1,p2,p3,p4,p5], true);
 }
 
-public void startAnalyses(loc project, bool print){
+public void startAnalyses(list[loc] projects, bool print){
+	for (p<-projects){
+		if(!isCached(p)){
+			println("Not in Cache.");println(p);
+			try{
+			  Results r = processProject(p, print);
+			  println("Processed, adding to cache.");
+			  addToCache(r);		
+			}catch : {println("Failed to load project");println(p);}
+		}else{
+			println("Found in Cache, skipping.");println(p);
+		}
+	}
+  	
+  	list[Results] results = getResults();
+	//start visualisation
+	begin(results);
+}
+
+
+private Results processProject(loc project, bool print){
+	
 	//calc volume metrics
-	//from metrics::VolumeMetric
+	//from metrics::VolumeMetric 
 	VolumeMetricsResult volumeMetricsResult = calculateVolumeMetrics(project);
 	Ranking volumeRating = volumeMetricsResult.ranking;
 	
@@ -73,15 +94,15 @@ public void startAnalyses(loc project, bool print){
 	}
 	
 	Results _results = results(
+	    project,
+	    createM3FromEclipseProject(project),
 		unitMetricsResult,
  		duplicationMetricsResult,
  		testCoverageMetricResult,
  		volumeMetricsResult
   	);
   	
-	//start visualisation
-	M3 model = createM3FromEclipseProject(project);
-	begin({model},_results);
+  	return _results;
 }
 
 private void printVolumeMetrics(VolumeMetricsResult volResult) {	

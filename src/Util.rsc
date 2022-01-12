@@ -60,7 +60,7 @@ public list[str] readFileLines(loc l){
 	return IO::readFileLines(l);
 }
 
-public void println(str s){
+public void println(value s){
 	return IO::println(s);
 }
 

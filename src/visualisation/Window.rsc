@@ -15,6 +15,7 @@ import util::Math;
 
 import visualisation::ProjectBrowser;
 import visualisation::MethodInformationPanel;
+import visualisation::ScatterPlotPanel;
 import visualisation::ComplexityTreemapPanel;
 import visualisation::AnalysisResults;
 import visualisation::SettingsPanel;
@@ -25,6 +26,7 @@ import analysis::graphs::Graph;
 
 import Results;
 
+private int numberOfPanels = 3;
 private int previousIndex = 0;
 private int currentIndex = 0;
 
@@ -34,7 +36,7 @@ private int currentIndex = 0;
 void onPBNewLocationSelected(loc location) {
 	println("Location selected:");
 	println(location);
-	
+	/*
 	if(isMethod(location)){
 		//mip_setCurrentMethod(location);
 		currentIndex = 1;
@@ -42,6 +44,7 @@ void onPBNewLocationSelected(loc location) {
 		//ctp_setMethods(location.path, pb_getMethodsOfSelectedLocation());
 		currentIndex = 2;
 	}
+	*/
 	//updateMaintainabilityRankingPanel();
 }
 
@@ -81,12 +84,23 @@ void settingsPanelClosed(){
 	currentIndex = previousIndex;
 }
 
+private void nextPanel(){
+   if(currentIndex+1 < numberOfPanels){
+     currentIndex = currentIndex+1;
+   }else{
+     currentIndex = 0;
+   }
+}
+
 /**
  * Module entry point method.
  */
-void begin(set[M3] models, Results results) {
+void begin(list[Results] results) {
+	set[M3] models = {r.m3| r<-results};
+	println(size(models));
 	previousIndex = 0;
 	currentIndex = 0;
+	
 	
 	//Project Browser callbacks
 	pb_addNewLocationSelectedEventListener(onPBNewLocationSelected);
@@ -107,7 +121,7 @@ void begin(set[M3] models, Results results) {
 	*/
 	render(
 		page("Maintainability Metrics Analyzer",
-			 menuBar([myButton("Settings", settingsPanelButtonCallback, vresizable(false), height(48))]),
+			 menuBar([myButton("Change View", nextPanel, vresizable(false), height(30))]),
 			 createMain(
 			 /*
 			 	panel(projectBrowser(), "", 0),
@@ -119,9 +133,9 @@ void begin(set[M3] models, Results results) {
 			 		//settingsPanel()
 			 	])*/
 			 	panel(projectBrowser(models), "", 0),
-			 	maintainabilityRankingPanel(results),
+			 	maintainabilityRankingPanel(results[0]),
 			 	fswitch(int(){return currentIndex;},[
-			 		welcomePanel(),
+			 		scatterPlotPanel(results[0]),
 			 		createDummyFigure(),//methodInformationPanel(),
 			 		createDummyFigure(),//complexityTreemapPanel(),
 			 		settingsPanel()
@@ -149,18 +163,22 @@ public Figure createDummyFigure(){
  * @param right The figure for the right side area.
  * @returns A Figure representing the composed main window.
  */
+
+
 public Figure createMain(Figure leftTop, Figure leftBottom, Figure right) {
+	
 	return box(
 		hcat(
 		[
 			vcat(
 			[
-				space(leftTop),
-				space(leftBottom, resizable(false), height(120))
-			], hsize(350), hresizable(false), vgap(48)),
-			space(right)
+				box(resizable(false), size(350,250)),
+				box(resizable(false), size(350,250))
+			]),
+			
+			box(right, size(700,500))
 		],
-		gap(48), startGap(true), endGap(true)),
+		gap(20), startGap(true), endGap(true)),
 		fillColor(color("white", 0.0)), lineWidth(0)
 	);
 }

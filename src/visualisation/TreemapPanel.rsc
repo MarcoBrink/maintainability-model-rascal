@@ -13,6 +13,7 @@ public Figure TreemapPanel(Results result)
 {
 	tempTotalLines = 0.0;
 	list[Figure] boxes = getBoxesForUnits(result.unitMetricsResult.mscores, result.unitMetricsResult.totalUnitLines);
+	println(<tempTotalLines, result.unitMetricsResult.totalUnitLines>);
 	
 	return scrollable(treemap(boxes), size(800,500),resizable(false));
 }
@@ -26,7 +27,18 @@ private list[Figure] getBoxesForUnits(list[MethodScore] methodScores, int totalL
 
 private Figure getBoxForUnit(MethodScore mscore, int totalLines)
 {
-	return box(area(getBoxSize(mscore[2],totalLines)), fillColor(getColor(mscore[3])));
+	return box(area(getBoxSize(mscore[2],totalLines)), fillColor(getColor(mscore[3])), popup(mscore));
+}
+
+public FProperty popup(MethodScore methodScore) {
+			return mouseOver(box(vcat([
+						text("Location:\t<methodScore[0]>", fontBold(true), left()), 
+						text("Complexity:\t<methodScore[3]>", fontItalic(true), left()), 
+						text("Lines of code:\t<methodScore[2]>", fontItalic(true), left())//,
+						], vgap(5)),
+					 fillColor("White"),
+					 gap(5), startGap(true), endGap(true),
+					 resizable(false)));
 }
 
 private real getBoxSize(int lines, int totalLines)
@@ -37,10 +49,8 @@ private real getBoxSize(int lines, int totalLines)
 
 private Color getColor(int complexity)
 {
-	if(complexity > 50) return rgb(255,0,0);
-	if(complexity > 30) return rgb(255,70,70);
-	if(complexity > 10) return rgb(255,140,140);
-	if(complexity > 6) return rgb(255,150,150);
-	if(complexity > 4) return rgb(255,180,180);
-	return rgb(255,200,200);
+	if(complexity > 50) return rgb(255,99,71);
+	if(complexity > 20) return rgb(255,165,0);
+	if(complexity > 10) return rgb(255,253,141);
+	return rgb(144,238,144);
 }

@@ -15,7 +15,7 @@ public Figure TreemapPanel(Results result)
 	list[Figure] boxes = getBoxesForUnits(result.unitMetricsResult.mscores, result.unitMetricsResult.totalUnitLines);
 	println(<tempTotalLines, result.unitMetricsResult.totalUnitLines>);
 	
-	return scrollable(treemap(boxes), size(800,500),resizable(false));
+	return scrollable(treemap(boxes), size(1200,550),resizable(false));
 }
 
 private list[Figure] getBoxesForUnits(list[MethodScore] methodScores, int totalLines)
@@ -33,6 +33,7 @@ private Figure getBoxForUnit(MethodScore mscore, int totalLines)
 public FProperty popup(MethodScore methodScore) {
 			return mouseOver(box(vcat([
 						text("Location:\t<methodScore[0]>", fontBold(true), left()), 
+						text("Method:\t<methodScore[1]>", fontItalic(true), left()), 
 						text("Complexity:\t<methodScore[3]>", fontItalic(true), left()), 
 						text("Lines of code:\t<methodScore[2]>", fontItalic(true), left())//,
 						], vgap(5)),

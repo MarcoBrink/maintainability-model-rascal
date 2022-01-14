@@ -27,9 +27,11 @@ import analysis::graphs::Graph;
 
 import Results;
 
-private int numberOfPanels = 2;
-private int previousIndex = 0;
+private list[str] panelNames = ["Scatter plot", "Treemap"];
+private int numberOfPanels = size(panelNames);
+//private int previousIndex = 0;
 private int currentIndex = 0;
+
 
 /**
  * Event listener for project browser new location selected.
@@ -122,7 +124,7 @@ void begin(list[Results] results) {
 	*/
 	render(
 		page("Maintainability Metrics Analyzer",
-			 menuBar([myButton("Change View", nextPanel, vresizable(false), height(30))]),
+			 menuBar([myButton("Change View", nextPanel, vresizable(false), height(30)), space(size(340,30)) ,computeFigure(Figure (){ return text(panelNames[currentIndex],fontColor("white"), fontBold(true), hcenter());})]),
 			 createMain(
 			 /*
 			 	panel(projectBrowser(), "", 0),
@@ -134,8 +136,6 @@ void begin(list[Results] results) {
 			 		//settingsPanel()
 			 	])*/
 			 	//panel(projectBrowser(models), "", 0),
-			 	box(),
-			 	maintainabilityRankingPanel(results[0]),
 			 	fswitch(int(){return currentIndex;},[
 			 		scatterPlotPanel(results[0]),
 			 		TreemapPanel(results[0])
@@ -165,24 +165,10 @@ public Figure createDummyFigure(){
  */
 
 
-public Figure createMain(Figure leftTop, Figure leftBottom, Figure right) {
+public Figure createMain(Figure right) {
 	int width = 1500;
 	int height = 700;
-	int leftwidth = 350;
-	int rightwidth = width-leftwidth;
-	return box(
-		hcat(
-		[
-			
-			box(leftTop,resizable(false), size(leftwidth,height)),
-				
-		
-			
-			box(right, size(rightwidth,height), resizable(false))
-		],
-		gap(20), startGap(true), endGap(true)), size(1050,height), resizable(false),
-		fillColor(color("white", 0.0)), lineWidth(0)
-	);
+	return box(right, size(width,height), resizable(false), gap(20), startGap(true), endGap(true));
 }
 
 /**

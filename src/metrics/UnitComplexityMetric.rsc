@@ -13,7 +13,7 @@ import SIGRanking;
 import Results;
 import Util;
 
-alias Methods = rel[loc, Statement];
+alias Methods = rel[loc, Statement, str]; // location, statement and method name
 
 private int maxComplexity = 0;
 private int maxLoc = 0;
@@ -53,15 +53,16 @@ public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {
 public Methods allMethods(set[Declaration] decls){
 	methods = {};
 	visit(decls){
-		case m: \method(_,_,_,_, Statement s): methods += <m.src, s>;
-		case c: \constructor(_,_,_, Statement s): methods += <c.src, s>;
+		case m: \method(_,n,_,_, Statement s): methods += <m.src, s, n>;
+		case c: \constructor(n,_,_, Statement s): methods += <c.src, s, n>;
 	}
 	return methods; 
 }
 
 private list[MethodScore] calculateVolumeAndComplexityPerUnit(Methods methods){
     //normalize from metrics::calculations::Normalize
-	return [<a,b,updateMaxLoc(normalizedUnit.metadata.codeLines),calcCC(b)> | <a,b> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
+	//return [<a,b,updateMaxLoc(normalizedUnit.metadata.codeLines),calcCC(b)> | <a,b> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
+	return [<a, c, updateMaxLoc(normalizedUnit.metadata.codeLines),calcCC(b)> | <a,b,c> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
 }
 
 private int calcCC(Statement statement) {

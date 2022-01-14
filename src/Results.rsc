@@ -8,7 +8,7 @@ import lang::java::jdt::m3::Core;
 
 
 alias UnitScores  = tuple[real, real, real, real]; // low, moderate, high, very_high
-alias MethodScore = tuple[loc, Statement, int, int]; //location, Method, Number of lines, and UnitComplexity Score.
+alias MethodScore = tuple[loc, str, int, int]; //location, Method, Number of lines, and UnitComplexity Score.
 
 alias UnitComplexityScores = tuple[UnitScores scores, Ranking rating];
 alias UnitSizeScores       = tuple[UnitScores scores, Ranking rating];

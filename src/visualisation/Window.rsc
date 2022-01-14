@@ -133,7 +133,8 @@ void begin(list[Results] results) {
 			 		//complexityTreemapPanel(),
 			 		//settingsPanel()
 			 	])*/
-			 	panel(projectBrowser(models), "", 0),
+			 	//panel(projectBrowser(models), "", 0),
+			 	box(),
 			 	maintainabilityRankingPanel(results[0]),
 			 	fswitch(int(){return currentIndex;},[
 			 		scatterPlotPanel(results[0]),
@@ -165,19 +166,21 @@ public Figure createDummyFigure(){
 
 
 public Figure createMain(Figure leftTop, Figure leftBottom, Figure right) {
-	
+	int width = 1500;
+	int height = 700;
+	int leftwidth = 350;
+	int rightwidth = width-leftwidth;
 	return box(
 		hcat(
 		[
-			vcat(
-			[
-				box(resizable(false), size(350,250)),
-				box(resizable(false), size(350,250))
-			]),
 			
-			box(right, size(700,500))
+			box(leftTop,resizable(false), size(leftwidth,height)),
+				
+		
+			
+			box(right, size(rightwidth,height), resizable(false))
 		],
-		gap(20), startGap(true), endGap(true)),
+		gap(20), startGap(true), endGap(true)), size(1050,height), resizable(false),
 		fillColor(color("white", 0.0)), lineWidth(0)
 	);
 }

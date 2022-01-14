@@ -5,9 +5,12 @@ import vis::Figure;
 import IO;
 import List;
 import Results;
+import vis::KeySym;
+import vis::Render;
 
+alias Method = tuple[loc location, str name];
 
-alias DataUnit = tuple[int volume, int complexity, list[loc] locations];
+alias DataUnit = tuple[int volume, int complexity, list[Method] methods];
 alias DataMatrix = list[list[DataUnit]];
 //alias DataMatrix = list[list[list[loc]]];
 alias VisualGrid = list[list[Figure]];
@@ -31,16 +34,12 @@ public Figure scatterPlotPanel(Results results) {
 		vcat(
 			[
 				name,
-				
-				hcat(
+				box(hcat(
 					[
 					vcat([box(text("Cyclomatic Complexity \u2192", textAngle(270)),size(20, vertical), resizable(false), lineWidth(2)),box(size(20,20),resizable(false), lineWidth(2))], resizable(false)),
 					vcat([overlay([spFigure,getGrid()]),box(text("Lines of Code \u2192"),size(horizontal,20), resizable(false), lineWidth(2))],resizable(false))
 					],resizable(false)
-				)
-				 
-				   
-				
+				))			
 			]
 		)
 	);
@@ -58,9 +57,9 @@ private Figure getGridBox(int h, int w){
 public Figure getGrid(){
  	
 	
-    c1w = 16*(boxSize+2); c2w = 15*(boxSize+2); c3w = 40*(boxSize+2); c4w = 40*(boxSize+2);
+    c1w = 15*(boxSize+2); c2w = 15*(boxSize+2); c3w = 40*(boxSize+2); c4w = 41*(boxSize+2);
     
-	r1h =  5 *(boxSize+2);
+	r1h =  6 *(boxSize+2);
 	row1 = [getGridBox(c1w,r1h),getGridBox(c2w,r1h),getGridBox(c3w,r1h),getGridBox(c4w,r1h)];
 	
 	r2h = 30 * (boxSize+2);
@@ -70,7 +69,7 @@ public Figure getGrid(){
 	r3h = 10 *(boxSize+2);
 	row3 = [getGridBox(c1w,r3h),getGridBox(c2w,r3h),getGridBox(c3w,r3h),getGridBox(c4w,r3h)];
 	
-	r4h =  11*(boxSize+2); 	
+	r4h =  10*(boxSize+2); 	
 	row4 = [getGridBox(c1w,r4h),getGridBox(c2w,r4h),getGridBox(c3w,r4h),getGridBox(c4w,r4h)];
 
 
@@ -101,17 +100,15 @@ private Figure getBox(DataUnit unit)
 {
 	if(unit.volume>0){
 		return box(
-		 fillColor(getColor(size(unit.locations))),
+		 fillColor(getColor(size(unit.methods))),
 		 lineColor("White"),
-		 popup(unit)
-		 //onMouseDown(treemapBoxClickHandler(s.unit))
+		 info(unit)//,
+		 //infoPlus(unit)
 		);
 	}else{
 	  return box(
 		 fillColor("White"),
 		 lineColor("White")
-		 //popup(unit)//,
-		 //onMouseDown(treemapBoxClickHandler(s.unit))
 		);
 	}
 	
@@ -133,12 +130,12 @@ private DataMatrix fillMatrix(DataMatrix dm, list[MethodScore] methodScores)
 	{
 		int linesOfCode = methodScore[2];
 		int complexity = methodScore[3];
-		int y = (linesOfCode > maxHor) ? maxHor : linesOfCode;
-		int x = (complexity > maxVer) ? maxVer : complexity;
+		int y = (linesOfCode > (maxHor+1)) ? (maxHor+1) : linesOfCode;
+		int x = (complexity >= (maxVer+1)) ? (maxVer+1) : complexity;
 
-		dm[x][y].locations = dm[x][y].locations + [methodScore[0]];
-		dm[x][y].volume = linesOfCode;
-		dm[x][y].complexity = complexity;			
+		dm[x-1][y-1].methods = dm[x-1][y-1].methods + [<methodScore[0], methodScore[1]>];
+		dm[x-1][y-1].volume = linesOfCode;
+		dm[x-1][y-1].complexity = complexity;			
 	}
 	return dm;
 }
@@ -148,15 +145,38 @@ private DataMatrix fillMatrix(DataMatrix dm, list[MethodScore] methodScores)
  * @param s The UnitInfo to return the FProperty for.
  * @returns An FProperty representing the popup.
  */
-public FProperty popup(DataUnit unit) {
-			return mouseOver(box(vcat([
-						//text(location, fontBold(true), left()), 
-						text("Complexity:\t<unit.complexity>", fontItalic(true), left()), 
-						text("Lines of code:\t<unit.volume>", fontItalic(true), left())//,
-						//text("")//,
-						//text("ctrl+click to view source...", left())
-						], vgap(5)),
-					 fillColor("White"),
-					 gap(5), startGap(true), endGap(true),
-					 resizable(false)));
+public FProperty info(DataUnit unit) {
+	return onMouseOver(popup(unit, true));
+}
+
+public FProperty infoPlus(DataUnit unit) {
+	
+	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
+		println("Click");
+		render(popup(unit,true));
+		return true;
+	});
+	
+}
+
+private Figure popup(DataUnit unit, bool showMethods){
+	return box(vcat(getTextBoxes(unit, showMethods), vgap(5)),
+				fillColor("White"),
+				gap(5), startGap(true), endGap(true),
+				resizable(false));
+}
+
+private list[Figure] getTextBoxes(DataUnit unit, bool methods){
+    list[Figure] tbs = [
+      text("Complexity:\t<unit.complexity>", fontItalic(true), left()), 
+      text("Lines of code:\t<unit.volume>", fontItalic(true), left()),
+      text("Number of methods:\t<size(unit.methods)>", fontItalic(true), left())
+    ];
+   /*
+  if(methods){
+	for(<a,b><-unit.methods){
+	  tbs = tbs + text(b +"||" +a.uri);
+	}  
+  }*/
+	return tbs;
 }

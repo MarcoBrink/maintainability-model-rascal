@@ -6,6 +6,7 @@ import metrics::rankings::UnitRanking;
 import util::Math;
 import IO;
 import SIGRanking;
+import Results;
 
 public test bool test1(){
 	loc file =  |project://maintainability-metrics//testData//CyclomaticTestData.java|;

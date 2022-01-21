@@ -6,6 +6,7 @@ import metrics::rankings::DuplicationRanking;
 import SIGRanking;
 import IO;
 import util::Math;
+import Results;
 
 public test bool test1(){
   loc project =  |project://maintainability-metrics|;

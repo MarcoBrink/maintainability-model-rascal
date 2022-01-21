@@ -40,3 +40,7 @@ public test bool vtest1(){
 public test bool vtest2(){
   return tests::VolumeMetricTest::test2();
 }
+
+public test bool vtest3(){
+  return tests::VolumeMetricTest::test3();
+}

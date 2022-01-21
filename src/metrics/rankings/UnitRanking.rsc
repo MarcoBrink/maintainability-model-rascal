@@ -1,6 +1,6 @@
 module metrics::rankings::UnitRanking
 
-import SIGRanking;
+import Results;
 
 public Ranking getUnitRanking(tuple[real, real, real, real] rls){
 	if(rls[1] <= 25 && rls[2]<=0 && rls[3]<=0)

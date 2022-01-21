@@ -9,7 +9,6 @@ import metrics::calculations::Normalize;
 import metrics::rankings::TestCoverageRanking;
 
 import Util;
-import SIGRanking;
 import Results;
 
 public TestCoverageMetricResult calculateTestCoverageMetrics(set[Declaration] asts, int totalLOC, int totalUnits, real averageUnitComplexity){

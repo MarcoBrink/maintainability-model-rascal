@@ -3,42 +3,24 @@ module Cache
 import Results;
 import IO;
 import ValueIO;
+import String;
 
-loc projects = |file:///C:/Temp/results.txt|;
+str cacheFolder = "file:///C:/Temp/";
 
-bool refreshed = false;
-map[loc, Results] cache = ();
-
-public void addToCache(Results result){
-  refreshCache();
-  cache = cache + (result.location: result);
-  updateCache();
+public bool isCached(loc project){
+  str path = project.authority;
+  loc location = toLocation(cacheFolder+path+".txt");
+  return isFile(location);
 }
 
-public bool isCached(loc location){
-  refreshCache();
-  return location in cache;
+public Results getResults(loc project){
+  str path = project.authority;
+  loc location = toLocation(cacheFolder+path+".txt");
+  return readTextValueFile(#Results, location);
 }
 
-public list[Results] getResults(){
-	refreshCache();
-	return [cache[k] | k <- cache ];
-}
-
-private void updateCache(){
-	writeTextValueFile(projects, cache);
-}
-
-private void refreshCache(){
-	if(!refreshed){
-	try{
-	  cache = readTextValueFile(#map[loc,Results], projects);
-	  refreshed = true;	
-	}catch: println("failed to read cache.");
-	}
-}
-
-public void test1(){
-writeTextValueFile(projects, cache);
-
+public void saveResults(loc project, Results results){
+  str path = project.authority;
+  loc location = toLocation(cacheFolder+path+".txt");
+  writeTextValueFile(location, results);
 }

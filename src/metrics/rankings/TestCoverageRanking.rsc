@@ -1,6 +1,6 @@
 module metrics::rankings::TestCoverageRanking
 
-import SIGRanking;
+import Results;
 
 public Ranking getTestCoverageRanking(int totalAsserts, int totalUnits, real averageUnitComplexity){
 	real coverage;

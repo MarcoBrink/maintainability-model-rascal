@@ -6,14 +6,15 @@ import metrics::rankings::DuplicationRanking;
 import SIGRanking;
 import IO;
 import util::Math;
+import Results;
 
 public test bool test1(){
   loc project =  |project://maintainability-metrics|;
   VolumeMetricsResult volResult = calculateVolumeMetrics(project);
   DuplicationMetricsResult result = calculateDuplicationMetrics(volResult.normalizedFiles);
   
-  println(result[0]);
-  try assert round(result[0], 0.1) == 44.4;
+  println(result[1]);
+  try assert round(result[1], 0.1) == 44.4;
   catch: return false;
   
   

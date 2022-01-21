@@ -5,6 +5,7 @@ import metrics::TestCoverageMetric;
 import metrics::rankings::TestCoverageRanking;
 import IO;
 import SIGRanking;
+import Results;
 
 public test bool test1(){
   loc file =  |project://maintainability-metrics//testData//TestCoverageTestData.java|;

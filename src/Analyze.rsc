@@ -10,8 +10,8 @@ import metrics::TestCoverageMetric;
 
 import visualisation::Window;
 
-import SIGRanking;
 import Results;
+import IO;
 
 import Util;
 import Cache;
@@ -23,26 +23,23 @@ public void startAnalyses(){
 	loc p4 = |project://hsqldb|;
 	loc p5 = |project://smallsql|;
 	loc p6 = |project://Jabberpoint|;
+	loc p7 = |project://CM5Operations|;
 	
-	startAnalyses([p1,p2,p3,p4,p5,p6], true);
+	startAnalyses(p4, true);
 }
 
-public void startAnalyses(list[loc] projects, bool print){
-	for (p<-projects){
-		if(!isCached(p)){
-			println("Not in Cache.");println(p);
-			try{
-			  Results r = processProject(p, print);
-			  println("Processed, adding to cache.");
-			  addToCache(r);		
-			}catch : {println("Failed to load project");println(p);}
-		}else{
-			println("Found in Cache, skipping.");println(p);
-		}
+public void startAnalyses(loc project, bool print){	
+	Results results;
+	println("Loading the following project: "+project.authority);
+	if(isCached(project)){
+	  results = getResults(project);
+	  println("Project found in Cache.");
+	}else{
+	  println("Project not in Cache, processing.");
+	  results = processProject(project, print);
+	  saveResults(project, results);
 	}
-  	
-  	list[Results] results = getResults();
-	//start visualisation
+	
 	begin(results);
 }
 
@@ -97,7 +94,7 @@ private Results processProject(loc project, bool print){
 	
 	Results _results = results(
 	    project,
-	    createM3FromEclipseProject(project),
+	    //createM3FromEclipseProject(project),
 		unitMetricsResult,
  		duplicationMetricsResult,
  		testCoverageMetricResult,

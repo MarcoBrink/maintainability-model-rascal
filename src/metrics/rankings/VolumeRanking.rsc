@@ -1,6 +1,6 @@
 module metrics::rankings::VolumeRanking
 
-import SIGRanking;
+import Results;
 
 public Ranking getVolumeRanking(int totalLinesOfCode){
 	int KLOC = totalLinesOfCode / 1000;

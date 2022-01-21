@@ -1,9 +1,12 @@
 module tests::VolumeMetricTest
 
+import lang::java::jdt::m3::AST;
+
 import metrics::rankings::VolumeRanking;
 import metrics::VolumeMetric;
 import SIGRanking;
 import IO;
+import Results;
 
 public test bool test1(){
   loc project =  |project://maintainability-metrics|;
@@ -17,6 +20,14 @@ public test bool test1(){
   }catch: return false;
   
   return true;
+}
+
+public test bool test3(){
+  loc file =  |project://maintainability-metrics//testData//CyclomaticTestData.java|;
+	//Declaration declaration = createAstFromFile(file,true);
+	VolumeMetricsResult result = calculateVolumeMetrics(file); 
+	println(result);
+	return true;
 }
 
 public test bool test2(){

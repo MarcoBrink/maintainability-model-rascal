@@ -1,6 +1,6 @@
 module metrics::rankings::DuplicationRanking
 
-import SIGRanking;
+import Results;
 
 public Ranking getDuplicationRanking(real percentage){
 	if(percentage < 3)

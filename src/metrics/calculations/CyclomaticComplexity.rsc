@@ -36,7 +36,7 @@ public int calculateCyclomaticComplexityPerUnit(Statement implementation) {
 	 	case \if(c,_,_): 			complexity += 1 + nrOfOperators(c);
 	 	case \conditional(c,_,_):   complexity += 1 + nrOfOperators(c); //ternary operator
 	 	case \while(c,_):			complexity += 1 + nrOfOperators(c);
-	 	case \do(_,c):				complexity += 1 + nrOfOperators(c);
+	 	case \do(_,c):				complexity += 1 + nrOfOperators(c); //should this be removed??
 	 	case \for(_,c,_,_):			complexity += 1 + nrOfOperators(c);
 	 	case \for(_,_,_):			complexity += 1;
 	 	case \foreach(_,_,_):		complexity += 1;
@@ -59,6 +59,8 @@ private int nrOfOperators(Expression exp) {
 		case \infix(_,op,_): {
 			if(op == "||") nrOfOps += 1;
 			if(op == "&&") nrOfOps += 1;
+			//if(op == "|") nrOfOps += 1;
+			//if(op == "&") nrOfOps += 1;
 		}
 	}
 	

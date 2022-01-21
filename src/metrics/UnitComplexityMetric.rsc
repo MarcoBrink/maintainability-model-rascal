@@ -9,7 +9,6 @@ import metrics::rankings::UnitRanking;
 import metrics::calculations::CyclomaticComplexity;
 import metrics::calculations::Normalize;
 
-import SIGRanking;
 import Results;
 import Util;
 

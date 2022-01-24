@@ -9,15 +9,8 @@ import vis::KeySym;
 import util::Math;
 
 
-
-import visualisation::ProjectBrowser;
-import visualisation::MethodInformationPanel;
 import visualisation::ScatterPlotPanel;
 import visualisation::TreemapPanel;
-import visualisation::ComplexityTreemapPanel;
-import visualisation::AnalysisResults;
-import visualisation::SettingsPanel;
-import visualisation::Controls;
 
 import analysis::graphs::Graph;
 
@@ -48,8 +41,7 @@ void begin(Results results) {
 			 //menuBar([button("Change View", nextPanel, vresizable(false), height(30)), space(size(340,30)) ,computeFigure(Figure (){ return text(panelNames[currentIndex],fontColor("white"), fontBold(true), hcenter());})]),
 			 createMain(
 			 	fswitch(int(){return currentIndex;},[
-			 		scatterPlotPanel(results),
-			 		TreemapPanel(results)
+			 		scatterPlotPanel(results)
 			 	])
 				 )//,
 			// footer("")

@@ -25,14 +25,6 @@ public test bool test1(){
   return true;
 }
 
-public test bool test3(){
-  loc file =  |project://maintainability-metrics//testData//CyclomaticTestData.java|;
-	//Declaration declaration = createAstFromFile(file,true);
-	VolumeMetricsResult result = calculateVolumeMetrics(file); 
-	println(result);
-	return true;
-}
-
 public test bool test2(){
   try{
 	  assert getVolumeRanking(0) == VERY_HIGH;
@@ -62,7 +54,7 @@ public test bool test3()
 	Methods methods = allMethods({declaration});
 	methodsInfo = (c : normalizedUnit.metadata | <a,b,c> <- methods,  tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a));
 	try
-	{
+	{		
 		VolumeInfo currentInfo = methodsInfo["VolumeTest1"];
 		assert(currentInfo.totalLines) == 10;
 		assert(currentInfo.codeLines) == 10;

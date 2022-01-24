@@ -162,7 +162,7 @@ public class Volume
 		 * multi
 		 */
 		
-		/* multi line */ int i = 0;
+		/* multi' line */ int i = 0;
 		
 		int j = 0; /* multi line */
 	

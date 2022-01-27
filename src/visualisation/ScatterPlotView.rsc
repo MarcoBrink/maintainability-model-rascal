@@ -1,18 +1,18 @@
-module visualisation::ScatterPlotPanel
+module visualisation::ScatterPlotView
 
 import IO;
 import List;
 import Results;
 import String;
 import util::Math;
+import util::Editors;
 
 import vis::KeySym;
 import vis::Render;
 import vis::Figure;
 
-import util::Editors;
 import Util;
-import visualisation::TreemapPanel;
+
 
 alias Method = tuple[loc location, str name];
 alias DataUnit = tuple[int volume, int complexity, list[Method] methods];
@@ -21,8 +21,26 @@ alias VisualGrid = list[list[Figure]];
 alias MethodUnitData = tuple[loc location, str name, int volume, int complexity];
 alias DataMatrixLarge = list[list[list[MethodUnitData]]];
 
-//private int minHor = 1;
-//private int minVer = 1;
+/*
+*  Attributes
+*/
+private Results results;
+private bool withColor;
+private bool showTotalPerCategory;
+private bool percentage;
+private bool asLines;
+private bool selected;
+
+/*
+*  Internal Status
+*/
+private DataUnit selectedData = <-1,-1,[]>; 
+private DataMatrix dataMatrix;
+private DataMatrixLarge dataMatrixCategories;
+
+/*
+* Dimensions
+*/
 private int maxHor = 110;
 private int maxVer = 65; 
 
@@ -35,120 +53,83 @@ private int horizontal = (maxHor+1)*(boxSize+2);
  //grid row sizes
  int r1h =  16 *(boxSize+2);int r2h = 30 * (boxSize+2); int r3h = 10 *(boxSize+2); int r4h =  10*(boxSize+2); //edit
 
-private str title = "Distribution Cyclomatic Complexity vs Volume (Lines of Code) per Method";
-private str subtitle = "";
-
+/*
+* Redrawing Method
+*/
 private bool redraw = false;
-private bool redrawTitle = false;
-
-private bool withColor = true;
-private bool showTotalPerCategory = false;
-private bool percentage = false;
-private bool asLines = false;
-private bool asTreeMap = false;
-private int currentPanel = 0;
-
-
-private bool selected = false;
-private DataUnit selectedData = <-1,-1,[]>; 
-
-private DataMatrix dataMatrix;
-private DataMatrixLarge dataMatrixCategories;
-
-private Results results;
-
 private bool toRedraw(){
 	if(redraw){
 		redraw = false;
-		println("Redrawing");
 		return true;
 	}
 	return false;
 }
 
-private bool toRedrawTitle(){
-	if(redrawTitle){
-		redrawTitle = false;
-		println("Redrawing Title");
-		return true;
-	}
-	return false;
-}
-
-public Figure scatterPlotPanel(Results _results) {
-	results = _results;
-	return box(vcat([
-			box(text(title, fontSize(20)),lineWidth(0), top()),
-			computeFigure(toRedrawTitle, Figure (){return box(text(subtitle, fontSize(14)),lineWidth(0), fillColor(color("White", 0.0)));}),
-			box(getMenu(), hsize(40), lineWidth(2)),
-			box(mainpanel(), resizable(false), size(horizontal+340, vertical+40))
-		], resizable(false))); 
-}
-
-public Figure mainpanel(){
-	return fswitch(int(){return currentPanel;},[
-		computeFigure(toRedraw, Figure (){return canvas();}),
-		TreemapPanel(results)
-	]);
-}
-
-private Figure getMenu(){
-	return 	box(
-		hcat([
-		  box(text("Reset"), resetAction()),
-		  box(text("Toggle Color"), toggleColorAction()),
-		  box(text("Nr. methods per Cat."), showCatAbsAction()),
-		  box(text("% methods per Cat."), showCatPerAction()),
-		  box(text("Nr. loc per Cat."), showCatAbsLocAction()),
-		  box(text("% loc per Cat."), showCatPerLocAction()),
-		  box(text("Toggle view"), toggleTreemapAction())
-		])
-	);
-}
-
-private FProperty resetAction() {
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){redraw =true;redrawTitle= true; withColor = true;showTotalPerCategory=false;percentage = false; subtitle ="";asTreeMap = false;return true;});
-}
-
-private FProperty toggleColorAction() {
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){redraw =true; withColor = !withColor; return true;});
-}
-
-private FProperty showCatAbsAction() {
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){redraw =true;redrawTitle= true;  showTotalPerCategory=true;percentage = false;asLines = false; subtitle ="Total number of methods per category"; return true;});
-}
 /*
-private FProperty showCatAbsAction() {
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){redraw =true; showTotalPerCategory=true;percentage = false;asLines = false; return true;});
-}*/
-
-private FProperty showCatPerAction() {
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){redraw =true;redrawTitle= true; showTotalPerCategory=true;percentage = true;asLines = false; subtitle ="Percentage of methods per category"; return true;});
+*  Constructor
+*/
+public Figure scatterPlotView(Results _results){ 
+	results = _results;
+	reset();
+	return computeFigure(toRedraw, Figure (){return canvas();});
 }
 
-private FProperty showCatAbsLocAction() {
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){redraw =true;redrawTitle= true; showTotalPerCategory=true;percentage = false;asLines = true; subtitle ="Total number of lines of code (loc) per category"; return true;});
+private void reset(){
+	withColor = true;
+	showTotalPerCategory = false;
+	percentage = false;
+ 	asLines = false;
+ 	selected = false;
+ 	selectedData = <-1,-1,[]>; 
 }
 
-private FProperty showCatPerLocAction() {
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){redraw =true; redrawTitle= true; showTotalPerCategory=true;percentage = true;asLines = true; subtitle ="Percentage of lines of code (loc) per category"; return true;});
+/*
+*  Setters
+*/
+public void spv_setColor(bool _withColor){
+  witchColor = _withColor;
 }
 
-private FProperty toggleTreemapAction() {
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){currentPanel = (currentPanel ==1)?0:1; return true;});
+public void spv_toggleColor(){
+  withColor = !withColor;
 }
 
+public void spv_setCategories(bool _showTotalPerCategory){
+  showTotalPerCategory = _showTotalPerCategory;
+}
+
+public void spv_setPercentage(bool _percentage){
+  percentage = _percentage;
+}
+
+public void spv_setLines(bool _asLines){
+  asLines = _asLines;
+}
+
+/*
+*  Commands
+*/
+public void spv_reset(){
+	withColor = true;
+	showTotalPerCategory = false;
+	percentage = false;
+ 	asLines = false;
+}
+
+public void spv_redraw(){
+  redraw = true;
+}
+
+/*
+* Private Methods
+*/
 private Figure canvas(){ 
-
-  Figure spFigure = scatterPlotFigure(results);
-  
   return hcat(
 		[
 			vcat([infoPanel()]),
 			vcat([box(text("Cyclomatic Complexity \u2192", textAngle(270)),size(20, vertical), resizable(false), lineWidth(2)),box(size(20,20),resizable(false), lineWidth(2)),box(size(20,20),resizable(false), lineWidth(2))], resizable(false)),
 			vcat(getVertAxes() +[ box(size(20,20),resizable(false), lineWidth(2)), box(size(20,20),resizable(false), lineWidth(2))], resizable(false)),
-			vcat([overlay([getGrid(true),spFigure, getGrid(false)]), box(getHorzAxes(),size(horizontal,20), resizable(false), lineWidth(2)),box(text("Lines of Code \u2192"),size(horizontal,20), resizable(false), lineWidth(2))  ],resizable(false))//,
-			//vcat([controlPanel()])
+			vcat([overlay([getGrid(true),scatterPlotFigure(), getGrid(false)]), box(getHorzAxes(),size(horizontal,20), resizable(false), lineWidth(2)),box(text("Lines of Code \u2192"),size(horizontal,20), resizable(false), lineWidth(2))  ],resizable(false))
 		],resizable(false)
 	);
 }
@@ -162,13 +143,66 @@ private Figure infoPanel(){
 		);
 }
 
-private Figure controlPanel(){
-	return box(vcat([box(text("Select Range"))]),
-			fillColor("White"),
-			size(300,vertical +40),
-			lineWidth(2),
- 			resizable(false)	
-		);
+private list[Figure] getTextBoxes(DataUnit unit, bool addMethods){
+  if(unit.volume == -1){
+    return [text("Select a dot on the right panel")];
+  }
+
+   list[Figure] methods = [];
+    
+   if(addMethods){
+	 for(<a,b><-unit.methods){
+	   str name = b;
+	   str path = a.path;
+	   str rownr = toString(a.begin.line);
+	   methods = methods + box(text(name +" || " +path+" || "+rownr), resizable(false), left(), top(), size(298,12), lineWidth(0), highlight(), onMouseDown(openLocation(a)));
+	 }  
+   }
+   
+   str complexity =  toString(unit.complexity);
+   str volume =  toString(unit.volume);
+   complexity = (unit.complexity>65)?"65+":complexity;
+   volume = (unit.volume>110)?"110+":volume;
+    
+   list[Figure] tbs = [
+      vcat([
+      box(vcat([
+        text("Information", fontBold(true), left()), 
+        text("", fontItalic(true), left()), 
+        text("Complexity:\t<complexity>", fontItalic(true), left(),resizable(false)), 
+        text("Lines of code:\t<volume>", fontItalic(true), left(),resizable(false)),
+        text("Number of methods:\t<size(unit.methods)>", fontItalic(true), left(), resizable(false)),
+        text("", fontItalic(true), left()), 
+        text("[Method name || Location || Line number]", fontItalic(true), fontSize(10), left()),
+        text("") 
+        ]),
+        size(298,100),
+        lineWidth(0),
+        top(),
+        resizable(false)
+        ),
+        scrollable(
+          vcat([
+          box(vcat(methods, vgap(2)), size(298, size(methods)*12),resizable(false),top(), lineWidth(1)),
+          box(lineWidth(0))
+          ])
+        )
+        
+        ])
+    ];
+   
+	return tbs;
+}
+
+private FProperty highlight() {
+	return mouseOver(box(fillColor(color("Gray", 0.3))));
+}
+
+private bool (int, map[KeyModifier, bool]) openLocation(loc ref) { 
+	return bool (int butnr, map[KeyModifier, bool] modifiers) {
+		  edit(ref);
+		  return true;
+	};
 }
 
 private Figure getHorzAxes(){
@@ -208,7 +242,6 @@ private Figure getCatInfo(tuple[int,int] index){
 	int linewidth;
 	if(showTotalPerCategory){
 		list[MethodUnitData] muds = dataMatrixCategories[index[0]][index[1]];
-		//list[Figure] boxes = [box(size(mud.complexity, mud.volume))| mud <- muds];
 		colour = color("White");
 		linewidth = 1;
 		if(!percentage && !asLines){
@@ -225,7 +258,6 @@ private Figure getCatInfo(tuple[int,int] index){
 			label = toString(sumOfLines);
 		}
 		if(percentage && asLines){
-			//int numOfMethods = size(muds);
 			int sumOfLines = sum([0]+[v| v<-muds.volume]);
 			real percentageMethods = Util::percentage(sumOfLines, results.unitMetricsResult.totalUnitLines);
 
@@ -252,7 +284,7 @@ private Figure getGrid(bool withBackgroundColor){
 	return grid([row1, row2, row3, row4], size((c1w+c2w+c3w+c4w),(r4h+r3h+r2h+r1h)), resizable(false));
 }
 
-private Figure scatterPlotFigure(Results results) {	
+private Figure scatterPlotFigure() {	
 	DataMatrix dm = [y |y := [z |z := <-1,-1,[]>, _ <- [0 .. maxHor+1]], _ <- [0 .. maxVer+1]];
 	DataMatrixLarge dml = [y |y := [z |z := [], _ <- [0 .. 4]], _ <- [0 .. 4]];
 	
@@ -275,7 +307,8 @@ private Figure getBox(DataUnit unit){
 		f= box(
 		 fillColor(getColor(size(unit.methods))),
 		 lineColor("Black"),
-		 onBoxClick(unit)
+		 onBoxClick(unit),
+		 highlight()
 		);
 	}else{
 	  f= box(
@@ -284,6 +317,19 @@ private Figure getBox(DataUnit unit){
 		);
 	}
 	return f;
+}
+
+private FProperty highlight() {
+	return mouseOver(box(fillColor(color("Black", 0.8))));
+}
+
+private FProperty onBoxClick(DataUnit unit) {	
+	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
+		redraw = true;
+		selected = true;
+		selectedData = unit; 
+		return true;
+	});
 }
 
 private Color getColor(int size){
@@ -306,8 +352,10 @@ private tuple[DataMatrix,DataMatrixLarge] fillMatrix(tuple[DataMatrix,DataMatrix
 		
 		if(x-1 > -1 && y-1 > -1) {
 		  dm[x-1][y-1].methods = dm[x-1][y-1].methods + [<methodScore[0], methodScore[1]>];
-		  dm[x-1][y-1].volume = linesOfCode;
-		  dm[x-1][y-1].complexity = complexity;
+		  if(dm[x-1][y-1].volume == -1){
+		    dm[x-1][y-1].volume = (linesOfCode);
+		    dm[x-1][y-1].complexity = complexity;		  
+		  }
 		}
 		
 		dml = addToLargeMatrix(dml, linesOfCode, complexity, methodScore);
@@ -336,84 +384,4 @@ private DataMatrixLarge addToLargeMatrix(DataMatrixLarge dml, int lc, int c, Met
 	dml[x][y] = dml[x][y] + <methodScore[0], methodScore[1], lc, c>;
 
 	return dml;
-}
-
-
-public FProperty onBoxClick(DataUnit unit) {	
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-		redraw = true;
-		selected = true;
-		selectedData = unit; 
-		return true;
-	});
-}
-
-/*
-public FProperty onToggleClick() {	
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-		println("toggle");
-		withColor = !withColor;
-		return true;
-	});
-}
-
-private Figure popup(DataUnit unit, bool showMethods){
-	return box(vcat(getTextBoxes(unit, showMethods), vgap(5)),
-				fillColor("White"),
-				gap(5), startGap(true), endGap(true),
-				resizable(false));
-}
-*/
-private list[Figure] getTextBoxes(DataUnit unit, bool addMethods){
-  if(unit.volume == -1){
-    return [text("Select a dot on the right panel")];
-  }
-
-    list[Figure] methods = [];
-    
-   if(addMethods){
-	 for(<a,b><-unit.methods){
-	   str name = b;
-	   str path = a.path;
-	   str rownr = toString(a.begin.line);
-	   methods = methods + box(text(name +" || " +path+" || "+rownr), resizable(false), left(), top(), size(298,12), lineWidth(0), onMouseDown(openLocation(a)));
-	 }  
-   }
-    
-    list[Figure] tbs = [
-      vcat([
-      box(vcat([
-        text("Information", fontBold(true), left()), 
-        text("", fontItalic(true), left()), 
-        text("Complexity:\t<unit.complexity>", fontItalic(true), left(),resizable(false)), 
-        text("Lines of code:\t<unit.volume>", fontItalic(true), left(),resizable(false)),
-        text("Number of methods:\t<size(unit.methods)>", fontItalic(true), left(), resizable(false)),
-        text("", fontItalic(true), left()), 
-        text("[Method name || Location || Line number]", fontItalic(true), fontSize(10), left()),
-        text("") 
-        ]),
-        size(298,100),
-        lineWidth(0),
-        top(),
-        resizable(false)
-        ),
-        scrollable(
-          vcat([
-          box(vcat(methods), size(298, size(methods)*12),resizable(false),top(), lineWidth(0)),
-          box(lineWidth(0))
-          ])
-        )
-        
-        ])
-    ];
-   
-	return tbs;
-}
-
-
-public bool (int, map[KeyModifier, bool]) openLocation(loc ref) { 
-	return bool (int butnr, map[KeyModifier, bool] modifiers) {
-		  edit(ref);
-		  return true;
-	};
 }

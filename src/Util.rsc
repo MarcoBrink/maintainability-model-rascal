@@ -26,7 +26,7 @@ public str toString(num n){
 public real toReal(num n){
 	return util::Math::toReal(n);
 }
-
+/*
 public int sum(list[value] l){
 	return List::sum([0]+l);
 }
@@ -34,7 +34,7 @@ public int sum(list[value] l){
 public int sum(set[value] s){
 	return Set::sum({0}+s);
 }
-
+*/
 public int size(list[value] l){
 	return List::size(l);
 }

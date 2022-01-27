@@ -8,7 +8,7 @@ import metrics::DuplicationMetric;
 import metrics::VolumeMetric;
 import metrics::TestCoverageMetric;
 
-import visualisation::Window;
+import visualisation::MainPanel;
 
 import Results;
 import IO;
@@ -25,7 +25,7 @@ public void startAnalyses(){
 	loc p6 = |project://Jabberpoint|;
 	loc p7 = |project://CM5Operations|;
 	
-	startAnalyses(p4, true);
+	startAnalyses(p7, true);
 }
 
 public void startAnalyses(loc project, bool print){	
@@ -77,7 +77,7 @@ private Results processProject(loc project, bool print){
 	
 	
 	Ranking analysability = averageRanking([volumeRating, duplicationRating, unitSizeRating, testCoverageRating]);
-	Ranking changeability = averageRanking([unitComplexityRating,duplicationRating]);
+	Ranking changeability = averageRanking([unitComplexityRating, duplicationRating]);
 	Ranking stability = averageRanking([testCoverageRating]);
 	Ranking testability = averageRanking([unitComplexityRating, unitSizeRating, testCoverageRating]);
 	

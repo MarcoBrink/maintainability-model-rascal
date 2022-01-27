@@ -46,26 +46,24 @@ public tuple[list[str], VolumeInfo] normalize(loc location, VolumeInfo meta){
 		}
 		
 		str cleanLine = "";
-		
 		int index = 0;
 		bool singleQuoteString = false;
 		bool multiQuoteString = false;
 		bool inString = false;
 		
-		while(hasNextChar(l, index)){
-		   	
+		while(hasNextChar(l, index)){	
 		   str token = getChar(l,index);
-		  
+		   
 		   if(!inString){
-		     <r,s,m> = isStringStart(token, singleQuoteString, multiQuoteString);
+		     <r,s,m> = isStringStart(token, singleQuoteString, multiQuoteString, inMulti);
 		     inString = r;
 		     singleQuoteString = s;
-		     multiQuoteString = m;		   
+		     multiQuoteString = m;
 		   }else{
 		     <r,s,m> = isStringEnd(token, singleQuoteString, multiQuoteString);
 		     inString = !r;
 		     singleQuoteString = s;
-		     multiQuoteString = m;	
+		     multiQuoteString = m;
 		   }
 		 
 		   if(!inString && !inMulti && isStartComment(token, l, index)){ // search for start of a comment '//' or '/*' unless in multicomment block
@@ -91,7 +89,6 @@ public tuple[list[str], VolumeInfo] normalize(loc location, VolumeInfo meta){
 			index += 1;
 		}
 		
-		
 		if(trim(cleanLine) != ""){
 			result += cleanLine;
 			meta.codeLines += 1;
@@ -101,16 +98,21 @@ public tuple[list[str], VolumeInfo] normalize(loc location, VolumeInfo meta){
 	return <result,meta>;
 }
 
-private tuple[bool, bool, bool] isStringStart(str token, bool single, bool multi){
-	if(single||multi){
-		return <false, single, multi>;
+private tuple[bool, bool, bool] isStringStart(str token, bool single, bool multi, bool inMultiLineComment){
+	
+	if(!inMultiLineComment)
+	{
+		if(single||multi){
+			return <false, single, multi>;
+		}
+		if(token == "\""){
+			return <true,false,true>;
+		}
+		if(token == "\'"){
+		return <true, true, false>;
+		}
 	}
-	if(token == "\""){
-		return <true,false,true>;
-	}
-	if(token == "\'"){
-	return <true, true, false>;
-	}
+	
 	return <false, single, multi>;
 }
 

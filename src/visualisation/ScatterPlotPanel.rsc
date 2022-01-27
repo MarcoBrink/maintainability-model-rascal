@@ -56,6 +56,8 @@ private DataMatrix dataMatrix;
 private DataMatrixLarge dataMatrixCategories;
 
 private Results results;
+private list[Figure] boxes = [];
+
 
 private bool toRedraw(){
 	if(redraw){
@@ -77,6 +79,9 @@ private bool toRedrawTitle(){
 
 public Figure scatterPlotPanel(Results _results) {
 	results = _results;
+	boxes = getBoxesForUnits(_results.unitMetricsResult.mscores, _results.unitMetricsResult.totalUnitLines);
+	
+			
 	return box(vcat([
 			box(text(title, fontSize(20)),lineWidth(0), top()),
 			computeFigure(toRedrawTitle, Figure (){return box(text(subtitle, fontSize(14)),lineWidth(0), fillColor(color("White", 0.0)));}),
@@ -135,11 +140,13 @@ private FProperty showCatPerLocAction() {
 }
 
 private FProperty toggleTreemapAction() {
+
 	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){currentPanel = (currentPanel ==1)?0:1; return true;});
 }
 
 private Figure canvas(){ 
-
+/*
+<<<<<<< HEAD
   Figure spFigure = scatterPlotFigure(results);
   
   return hcat(
@@ -150,7 +157,27 @@ private Figure canvas(){
 			vcat([overlay([getGrid(true),spFigure, getGrid(false)]), box(getHorzAxes(),size(horizontal,20), resizable(false), lineWidth(2)),box(text("Lines of Code \u2192"),size(horizontal,20), resizable(false), lineWidth(2))  ],resizable(false))//,
 			//vcat([controlPanel()])
 		],resizable(false)
+=======
+  list[Figure] figures = [];
+  Figure spFigure; 
+  if(!asTreeMap){
+  	spFigure = scatterPlotFigure(results);
+  	figures = [
+			vcat([infoPanel()]),
+			vcat([box(text("Cyclomatic Complexity \u2192", textAngle(270)),size(20, vertical), resizable(false), lineWidth(2)),box(size(20,20),resizable(false), lineWidth(2)),box(size(20,20),resizable(false), lineWidth(2))], resizable(false)),
+			vcat(getVertAxes() +[ box(size(20,20),resizable(false), lineWidth(2)), box(size(20,20),resizable(false), lineWidth(2))], resizable(false)),
+			vcat([overlay([getGrid(true),spFigure, getGrid(false)]), box(getHorzAxes(),size(horizontal,20), resizable(false), lineWidth(2)),box(text("Lines of Code \u2192"),size(horizontal,20), resizable(false), lineWidth(2))  ],resizable(false))
+		];
+  }else{
+  	spFigure = loadTreemap();
+  	figures = [
+			vcat([infoPanel()]), spFigure];
+  }
+ 
+  return hcat(figures ,resizable(false)
+>>>>>>> ba03107947e815f75bfead1c99d2f3b1902da476
 	);
+	*/ return box(;
 }
 
 private Figure infoPanel(){
@@ -416,4 +443,9 @@ public bool (int, map[KeyModifier, bool]) openLocation(loc ref) {
 		  edit(ref);
 		  return true;
 	};
+}
+
+public Figure loadTreemap()
+{
+	return scrollable(treemap(boxes),size(1000,594));
 }

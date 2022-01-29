@@ -38,8 +38,6 @@ public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {
 	  averageSize = toReal(totalLinesOfCode)/totalUnits;
 	}
 	
-	
-	
 	UnitScores unitSizeCategories = calculateUnitSizePerCategory(mscores, totalLinesOfCode);
 	Ranking sizeRank = getUnitRanking(unitSizeCategories);
 	
@@ -63,6 +61,7 @@ private list[MethodScore] calculateVolumeAndComplexityPerUnit(Methods methods){
 	//return [<a,b,updateMaxLoc(normalizedUnit.metadata.codeLines),calcCC(b)> | <a,b> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
 	return [<a, c, updateMaxLoc(normalizedUnit.metadata.codeLines),calcCC(b)> | <a,b,c> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
 }
+
 
 private int calcCC(Statement statement) {
 	//method from metrics::calculations::CyclomaticComplexity;

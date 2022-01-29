@@ -33,6 +33,7 @@ public tuple[list[str],VolumeInfo] normalize(loc location){
 }
 
 public tuple[list[str], VolumeInfo] normalize(loc location, VolumeInfo meta){	
+
 	list[str] result = [];
 
 	bool inMulti = false;
@@ -94,7 +95,7 @@ public tuple[list[str], VolumeInfo] normalize(loc location, VolumeInfo meta){
 			meta.codeLines += 1;
 		}
 	}
-
+	
 	return <result,meta>;
 }
 

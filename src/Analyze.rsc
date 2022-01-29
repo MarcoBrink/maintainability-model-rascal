@@ -25,11 +25,8 @@ public void startAnalyses(){
 	loc p6 = |project://Jabberpoint|;
 	loc p7 = |project://CM5Operations|;
 	
-<<<<<<< HEAD
-	startAnalyses(p7, true);
-=======
-	startAnalyses(p5, true);
->>>>>>> ba03107947e815f75bfead1c99d2f3b1902da476
+	startAnalyses(p4, true);
+
 }
 
 public void startAnalyses(loc project, bool print){	

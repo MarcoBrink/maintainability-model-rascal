@@ -61,13 +61,14 @@ private Figure mainpanel(){
 private Figure getMenu(){
 	return 	box(
 		hcat([
-		  box(text("Reset"), resetAction(),highlight()),
-		  box(text("Toggle background color"), toggleColorAction(),highlight()),
+		  box(text("Scatterplot"), resetAction(),highlight()),
+		  box(text("Toggle bg color"), toggleColorAction(),highlight()),
 		  box(text("Nr. methods per Cat."), showCatAbsAction(),highlight()),
 		  box(text("% methods per Cat."), showCatPerAction(),highlight()),
 		  box(text("Nr. loc per Cat."), showCatAbsLocAction(),highlight()),
 		  box(text("% loc per Cat."), showCatPerLocAction(),highlight()),
-		  box(text("Toggle view"), toggleTreemapAction(),highlight())
+		  box(text("Treemap Volume"), showTreemapAction(),highlight()),
+		  box(text("Treemap Relative"), showTreemapRelAction(),highlight())
 		]), hsize(40), lineWidth(2)
 	);
 }
@@ -96,8 +97,12 @@ private FProperty showCatPerLocAction() {
 	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){spv_redraw(); currentPanel =0; spv_setCategories(true);spv_setPercentage(true);spv_setLines(true); setSubtitle("Scatterplot: Percentage of lines of code (loc) per category"); return true;});
 }
 
-private FProperty toggleTreemapAction() {
-	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){currentPanel = (currentPanel ==1)?0:1; (currentPanel==1)?setSubtitle("TreeMap"):setSubtitle("Scatterplot"); return true;});
+private FProperty showTreemapAction() {
+	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){currentPanel = 1; setSubtitle("Treemap Volume"); tmv_setRelativeView(false); return true;});
+}
+
+private FProperty showTreemapRelAction() {
+	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){currentPanel = 1; setSubtitle("Treemap Relative"); tmv_setRelativeView(true); return true;});
 }
 
 /*

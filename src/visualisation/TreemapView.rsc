@@ -9,19 +9,40 @@ import util::Math;
 import IO;
 import Results;
 
-private real tempTotalLines;
+private bool relativeView = false;
+private real tempTotalComplexity;
 private bool clicked = false;
 private bool ctrlClicked = false;
 private MethodScore selected;
 
+/*
+* Redrawing Method
+*/
+private bool redraw = false;
+private bool toRedraw(){
+	if(redraw){
+		redraw = false;
+		return true;
+	}
+	return false;
+}
+
 public Figure TreemapPanel(Results result, int width, int height){
-	tempTotalLines = 0.0;
-	list[Figure] boxes = getBoxesForUnits(result.unitMetricsResult.mscores, result.unitMetricsResult.totalUnitLines);
+	return computeFigure(toRedraw, Figure (){return getTreemap(result, width, height);});
+}
+
+private Figure getTreemap(Results result, int width, int height){
+list[Figure] boxes = getBoxesForUnits(result.unitMetricsResult.mscores, result.unitMetricsResult.totalUnitLines);
 	
 	return vcat([
 		box(treemap(boxes), size(width,height-60),resizable(false), onClick()),
 		box(getLegend(),size(width,40),resizable(false))
 	],vgap(3));
+}
+
+public void tmv_setRelativeView(bool rv){
+	relativeView = rv;
+	redraw = true;
 }
 
 private Figure getLegend(){
@@ -42,7 +63,12 @@ private Figure getColorLegend(){
 }
 
 private Figure getExplination(){
-	return box(text(" The larger the surface area, the larger (more lines of code) the method. "),lineWidth(2));
+	if(relativeView){
+		return box(text(" The larger the surface area, the larger the influence the method has on overall score. "),lineWidth(2));
+	}else{
+		return box(text(" The larger the surface area, the larger (more lines of code) the method. "),lineWidth(2));
+	}
+	
 }
 
 private FProperty onClick(){
@@ -65,7 +91,7 @@ private list[Figure] getBoxesForUnits(list[MethodScore] methodScores, int totalL
 }
 
 private Figure getBoxForUnit(MethodScore mscore, int totalLines) {
-	return box(area(getBoxSize(mscore[2],totalLines)), fillColor(getColor(mscore[3])), popup(mscore),highlight());
+	return box(area(getBoxSize(mscore[2],totalLines,mscore[3])), fillColor(getColor(mscore[3])), popup(mscore),highlight());
 }
 
 private FProperty popup(MethodScore methodScore) {
@@ -108,9 +134,12 @@ private FProperty highlight() {
 	return mouseOver(box(fillColor(color("Gray", 0.3))));
 }
 
-private real getBoxSize(int lines, int totalLines) {
-	tempTotalLines += percentage(lines,totalLines) * 100; 
-	return percentage(lines,totalLines * 100);
+private real getBoxSize(int lines, int totalLines, int complexity) {
+	if(relativeView){
+		return percentage(lines,totalLines * 100)*complexity;
+	}else{
+		return percentage(lines,totalLines * 100);
+	}
 }
 
 private Color getColor(int complexity) {

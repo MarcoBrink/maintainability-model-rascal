@@ -5,8 +5,9 @@ import metrics::rankings::VolumeRanking;
 
 import Results;
 
-//alias VolumeMetricsResult = tuple[Ranking ranking, map[loc, list[str]] normalizedFiles, int files, int totalLines, int codeLines, int blankLines];
-
+/* 
+*	Calculate the volume metrics of a project
+*/
 public VolumeMetricsResult calculateVolumeMetrics(loc project)
 {
 	NormalizedData normalized = normalizeFiles(project);

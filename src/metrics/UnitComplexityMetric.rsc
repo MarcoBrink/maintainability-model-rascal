@@ -1,8 +1,5 @@
 module metrics::UnitComplexityMetric
 
-//import lang::java::m3::AST;
-//import lang::java::m3::Core;
-//import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
 import metrics::rankings::UnitRanking;
@@ -57,14 +54,10 @@ public Methods allMethods(set[Declaration] decls){
 }
 
 private list[MethodScore] calculateVolumeAndComplexityPerUnit(Methods methods){
-    //normalize from metrics::calculations::Normalize
-	//return [<a,b,updateMaxLoc(normalizedUnit.metadata.codeLines),calcCC(b)> | <a,b> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
 	return [<a, c, updateMaxLoc(normalizedUnit.metadata.codeLines),calcCC(b)> | <a,b,c> <- methods, tuple[list[str] unit, VolumeInfo metadata] normalizedUnit := normalize(a)];
 }
 
-
 private int calcCC(Statement statement) {
-	//method from metrics::calculations::CyclomaticComplexity;
 	int result = calculateCyclomaticComplexityPerUnit(statement);
 	if(result > maxComplexity)
 	{
@@ -151,7 +144,6 @@ private tuple[int, int, int, int] groupComplexityByRiskGroup(list[MethodScore] m
 		}
 			
 		score = <score[0]+lines,score[1],score[2],score[3]>;	
-		
 	}	
 	return score;
 }

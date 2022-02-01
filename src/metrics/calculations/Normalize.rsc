@@ -11,6 +11,10 @@ import Util;
 alias VolumeInfo = tuple[int files, int totalLines, int codeLines, int blankLines];
 alias NormalizedData = tuple[map[loc, list[str]] normalizedFiles, VolumeInfo volumeInfo];
 
+/*
+*	Remove all comments and whitespace from files included in a project.
+*	Additionally, keep track of the cumulative VolumeInfo.
+*/
 public NormalizedData normalizeFiles(loc project)
 {
 	VolumeInfo volumeInfo = <0,0,0,0>;
@@ -27,12 +31,15 @@ public NormalizedData normalizeFiles(loc project)
   	return <normalizedFiles, volumeInfo>;
 }
 
+/*
+*	Remove all comments and whitespace from a single file
+*/
 public tuple[list[str],VolumeInfo] normalize(loc location){
 	VolumeInfo meta = <0,0,0,0>;
 	return normalize(location, meta);
 }
 
-public tuple[list[str], VolumeInfo] normalize(loc location, VolumeInfo meta){	
+private tuple[list[str], VolumeInfo] normalize(loc location, VolumeInfo meta){	
 
 	list[str] result = [];
 

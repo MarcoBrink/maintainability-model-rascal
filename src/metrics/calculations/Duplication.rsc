@@ -34,8 +34,7 @@ private tuple[int, map[str, set[str]]] calculateDuplicationPerFile(loc file, lis
 	result = ();
 	
 	list[str] cleanLines = removeWhitespace(normalizedFile); //remove all comments and whitespace from lines
-	//list[str] cleanLines = trimListEntries(x);
-	
+		
 	int totalLines = size(cleanLines);
 	
 	if(totalLines >= blockSize){
@@ -58,7 +57,6 @@ private map[str, set[str]] lineBlocks(list[str] lines, str path, int blockSize, 
 			set[str] numbers = {"|newline|"+path +toString(c) | int c  <- [i .. i+blockSize]};
 			lineblocks += (block : numbers);
 		}
-			
 	}
 	
 	return lineblocks;

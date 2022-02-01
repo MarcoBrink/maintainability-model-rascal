@@ -12,12 +12,6 @@ private str title = "Distribution Cyclomatic Complexity vs Volume (Lines of Code
 private str subtitle = "Scatterplot";
 private bool redrawSubTitle = false;
 
-/*
-private bool withColor = true;
-private bool showTotalPerCategory = false;
-private bool percentage = false;
-private bool asLines = false;
-*/
 private int currentPanel = 0;
 
 private Results results;
@@ -25,7 +19,7 @@ private Results results;
 /*
 * Constructor
 */
-public void begin(Results _results){
+public void mainPanel(Results _results){
 	results = _results;
 	currentPanel = 0;
 	render(
@@ -54,7 +48,7 @@ private bool toRedrawTitle(){
 private Figure mainpanel(){
 	return fswitch(int(){return currentPanel;},[
 		scatterPlotView(results),
-		TreemapPanel(results, 1340, 640)
+		treemapPanel(results, 1340, 640)
 	]);
 }
 
@@ -105,17 +99,9 @@ private FProperty showTreemapRelAction() {
 	return onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers){currentPanel = 1; setSubtitle("Treemap Relative"); tmv_setRelativeView(true); return true;});
 }
 
-/*
-* Label popups
-*/
-
 private FProperty highlight() {
 	return mouseOver(box(fillColor(color("Gray", 0.3))));
 }
-
-/*
-*
-*/
 
 private void setSubtitle(str s){
   redrawSubTitle= true;

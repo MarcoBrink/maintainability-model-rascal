@@ -18,15 +18,7 @@ Add one point for any additional boolean condition, such as the use of && or ||
 With exceptions, you can add each throws, throw, catch or finally block as a single point when calculating the McCabe cyclomatic complexity metric. 
 However, given Java's fairly verbose exception handling semantics, counting exception related flows can unfairly malign a well coded method, 
 so it's sometimes wise to ignore the additional points exception handling adds to the McCabe cyclomatic complexity metric total.
-
 *
-*/
-/*
-JArchitect uses
-if | while | for | foreach | case | default | continue | goto | && | || | catch | ternary operator ?: | ??
-
-but not
-else | do | switch | try | using | throw | finally | return | object creation | method call | field access
 */
 public int calculateCyclomaticComplexityPerUnit(Statement implementation) {
 	int complexity = 1;
@@ -34,18 +26,14 @@ public int calculateCyclomaticComplexityPerUnit(Statement implementation) {
 	visit(implementation) {
 	 	case \if(c,_): 	 			complexity += 1 + nrOfOperators(c);
 	 	case \if(c,_,_): 			complexity += 1 + nrOfOperators(c);
-	 	case \conditional(c,_,_):   complexity += 1 + nrOfOperators(c); //ternary operator
+	 	case \conditional(c,_,_):   complexity += 1 + nrOfOperators(c); 
 	 	case \while(c,_):			complexity += 1 + nrOfOperators(c);
-	 	case \do(_,c):				complexity += 1 + nrOfOperators(c); //should this be removed??
+	 	case \do(_,c):				complexity += 1 + nrOfOperators(c);
 	 	case \for(_,c,_,_):			complexity += 1 + nrOfOperators(c);
 	 	case \for(_,_,_):			complexity += 1;
 	 	case \foreach(_,_,_):		complexity += 1;
 	 	case \case(_):				complexity += 1;
 	 	case \catch(_,_):			complexity += 1;
-	 	//case \continue():			complexity += 1;
-	 	//case \continue(_):			complexity += 1;
-	 	//case \break():				complexity += 1;
-	 	//case \break(_):				complexity += 1;
 	}
 	
 	return complexity;
@@ -59,8 +47,6 @@ private int nrOfOperators(Expression exp) {
 		case \infix(_,op,_): {
 			if(op == "||") nrOfOps += 1;
 			if(op == "&&") nrOfOps += 1;
-			//if(op == "|") nrOfOps += 1;
-			//if(op == "&") nrOfOps += 1;
 		}
 	}
 	

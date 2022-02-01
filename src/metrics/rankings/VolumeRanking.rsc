@@ -2,6 +2,9 @@ module metrics::rankings::VolumeRanking
 
 import Results;
 
+/* 
+* The volume ranking as provided by SIG
+*/
 public Ranking getVolumeRanking(int totalLinesOfCode){
 	int KLOC = totalLinesOfCode / 1000;
 	

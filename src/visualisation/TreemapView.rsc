@@ -27,7 +27,10 @@ private bool toRedraw(){
 	return false;
 }
 
-public Figure TreemapPanel(Results result, int width, int height){
+/*
+* Constructor
+*/
+public Figure treemapPanel(Results result, int width, int height){
 	return computeFigure(toRedraw, Figure (){return getTreemap(result, width, height);});
 }
 
@@ -77,7 +80,6 @@ private FProperty onClick(){
 
 private void mouseClick(map[KeyModifier,bool] modifiers){
 	if(modifiers[modCtrl()]){
-		println("modCtrl true");
 		ctrlClicked = true;
 	}else{
 	   clicked = true;

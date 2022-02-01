@@ -15,7 +15,6 @@ public test bool test1(){
   try assert round(result[1], 0.1) == 36.9;
   catch: return false;
   
-  
   return true;
 }
 

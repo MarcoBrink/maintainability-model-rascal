@@ -2,6 +2,9 @@ module metrics::rankings::DuplicationRanking
 
 import Results;
 
+/* 
+* The duplication ranking as provided by SIG
+*/
 public Ranking getDuplicationRanking(real percentage){
 	if(percentage < 3)
 		return ranking = VERY_HIGH;

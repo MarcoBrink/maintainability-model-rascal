@@ -11,7 +11,6 @@ public test bool test1(){
 	loc testfile = |project://maintainability-metrics//testData//NormalizeTestData.java|;
 	normalized = normalize(testfile);
 	VolumeInfo info = normalized[1];
-	println(info);
 	
 	return true;
 }

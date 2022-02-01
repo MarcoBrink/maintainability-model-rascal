@@ -7,8 +7,6 @@ import metrics::UnitComplexityMetric;
 import metrics::calculations::Normalize;
 import metrics::VolumeMetric;
 
-import IO;
-import List;
 import Results;
 
 public test bool test1(){

@@ -16,20 +16,13 @@ import IO;
 import Util;
 import Cache;
 
-public void startAnalyses(){
-	loc p1 = |project://consumer|;
-	loc p2 = |project://Jabberpoint-le3|;
-	loc p3 = |project://testProject|;
-	loc p4 = |project://hsqldb|;
-	loc p5 = |project://smallsql|;
-	loc p6 = |project://Jabberpoint|;
-	loc p7 = |project://CM5Operations|;
-	
-	startAnalyses(p5, true);
-
+public void startAnalyses()
+{
+	loc location = |project://Jabberpoint|;
+	startAnalyses(location);
 }
 
-public void startAnalyses(loc project, bool print){	
+public void startAnalyses(loc project, bool print = true){	
 	Results results;
 	println("Loading the following project: "+project.authority);
 	if(isCached(project)){
@@ -41,7 +34,7 @@ public void startAnalyses(loc project, bool print){
 	  saveResults(project, results);
 	}
 	
-	begin(results);
+	mainPanel(results);
 }
 
 
@@ -95,7 +88,6 @@ private Results processProject(loc project, bool print){
 	
 	Results _results = results(
 	    project,
-	    //createM3FromEclipseProject(project),
 		unitMetricsResult,
  		duplicationMetricsResult,
  		testCoverageMetricResult,

@@ -3,7 +3,6 @@ module tests::DuplicationMetricTest
 import metrics::DuplicationMetric;
 import metrics::VolumeMetric;
 import metrics::rankings::DuplicationRanking;
-import SIGRanking;
 import IO;
 import util::Math;
 import Results;
@@ -13,8 +12,7 @@ public test bool test1(){
   VolumeMetricsResult volResult = calculateVolumeMetrics(project);
   DuplicationMetricsResult result = calculateDuplicationMetrics(volResult.normalizedFiles);
   
-  println(result[1]);
-  try assert round(result[1], 0.1) == 44.4;
+  try assert round(result[1], 0.1) == 36.9;
   catch: return false;
   
   

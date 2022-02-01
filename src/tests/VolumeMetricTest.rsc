@@ -16,10 +16,10 @@ public test bool test1(){
   VolumeMetricsResult result = calculateVolumeMetrics(project);
   
   try{
-    assert result.files == 3;
-    assert result.totalLines == 452;
-    assert result.codeLines == 369;
-    assert result.blankLines == 49;
+    assert result.files == 5;
+    assert result.totalLines == 681;
+    assert result.codeLines == 464;
+    assert result.blankLines == 118;
   }catch: return false;
   
   return true;

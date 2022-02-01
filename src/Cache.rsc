@@ -7,7 +7,6 @@ import String;
 
 str cacheFolder = "file:///C:/Temp/";
 
-
 /*
 * Check wether a project is already cached
 */

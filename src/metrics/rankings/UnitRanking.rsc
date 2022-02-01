@@ -3,7 +3,7 @@ module metrics::rankings::UnitRanking
 import Results;
 
 /* 
-* The unit rating as provided by SIG
+* The unit ranking as provided by SIG
 */
 public Ranking getUnitRanking(tuple[real, real, real, real] rls){
 	if(rls[1] <= 25 && rls[2]<=0 && rls[3]<=0)

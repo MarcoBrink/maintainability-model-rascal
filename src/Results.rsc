@@ -22,7 +22,6 @@ alias VolumeMetricsResult      = tuple[Ranking ranking, map[loc, list[str]] norm
 
 data Results = results(
 		loc location,
-		//M3 m3,
 		UnitMetricsResult unitMetricsResult,
  		DuplicationMetricsResult duplicationMetricsResult,
  		TestCoverageMetricResult testCoverageMetricResult,

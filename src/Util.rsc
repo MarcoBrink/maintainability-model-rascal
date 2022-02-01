@@ -8,6 +8,9 @@ import Set;
 import List;
 import String;
 
+/* 
+*	Calculate the percentage of amount x of total
+*/
 public real percentage(int x, int total){
 	if(x == 0|| total == 0){
 	  return 0.0;

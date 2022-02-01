@@ -16,12 +16,9 @@ import IO;
 import Util;
 import Cache;
 
-public void startAnalyses()
-{
-	loc location = |project://Jabberpoint|;
-	startAnalyses(location);
-}
-
+/* 
+*	Analyze the maintainability of a project
+*/
 public void startAnalyses(loc project, bool print = true){	
 	Results results;
 	println("Loading the following project: "+project.authority);

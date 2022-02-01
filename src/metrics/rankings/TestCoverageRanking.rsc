@@ -3,7 +3,7 @@ module metrics::rankings::TestCoverageRanking
 import Results;
 
 /* 
-* The test coverage rating as provided by SIG
+* The test coverage ranking as provided by SIG
 */
 public Ranking getTestCoverageRanking(int totalAsserts, int totalUnits, real averageUnitComplexity){
 	real coverage;

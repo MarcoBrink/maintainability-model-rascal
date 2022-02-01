@@ -14,7 +14,9 @@ alias Methods = rel[loc, Statement, str]; // location, statement and method name
 private int maxComplexity = 0;
 private int maxLoc = 0;
 
-
+/* 
+*	Calculate the complexity and volume per method
+*/
 public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {	
 	maxComplexity = 0;
 	maxLoc = 0;
@@ -44,6 +46,9 @@ public UnitMetricsResult calculateUnitMetrics(set[Declaration] declarations) {
 	return <<unitSizeCategories,sizeRank>,<unitComplexityCategories,complexityRank>, totalUnits, averageSize, averageComplexity, mscores, maxComplexity, maxLoc, totalLinesOfCode>;
 }
 
+/* 
+*	Retrieve the methods and constructors from a set of declarations
+*/
 public Methods allMethods(set[Declaration] decls){
 	methods = {};
 	visit(decls){

@@ -11,6 +11,9 @@ import metrics::rankings::TestCoverageRanking;
 import Util;
 import Results;
 
+/* 
+*	Calculate the test coverage
+*/
 public TestCoverageMetricResult calculateTestCoverageMetrics(set[Declaration] asts, int totalLOC, int totalUnits, real averageUnitComplexity){
   int count = 0;
   
